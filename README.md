@@ -3,7 +3,7 @@
 Public pitch page for OBA Agent, a personalized agent focused on experience-conditioned memory recall.
 
 - The core problem: agents can store memory flexibly, but recall memory too uniformly.
-- EXAONE as the user-facing speech and emotional-intelligence layer.
+- EXAONE as the post-STT Korean text cleanup and expression layer.
 - A lightweight main agent API as the reasoning and tool-execution layer.
 - MISO as separated memory ontology for expression and reasoning.
 - ApiFuse and ggui as action and UI surfaces.
