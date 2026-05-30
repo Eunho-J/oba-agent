@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="OBA Agent는 사용자의 경험에 따라 기억을 떠올리는 연상법 자체를 스스로 수정하고 검증하는 자기진화형 개인 에이전트입니다."
+      content="OBA Agent는 에이전트 자신의 작업 경험에 따라 기억을 떠올리는 연상법 자체를 스스로 수정하고 검증하는 자기진화형 개인 에이전트입니다."
     />
     <title>OBA Agent</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -36,7 +36,7 @@
           <p class="eyebrow">Self-evolving recall · Separated expression · Personal agent</p>
           <h1>스스로 연상법을 고치는 개인 에이전트</h1>
           <p class="hero-text">
-            OBA Agent의 핵심은 더 많은 기억이나 skill을 추가하는 것이 아니라, 같은 기억도 상황과 경험에 따라
+            OBA Agent의 핵심은 더 많은 기억이나 skill을 추가하는 것이 아니라, 같은 기억도 에이전트 자신의 작업 경험에 따라
             다르게 떠올리는 <strong>recall policy</strong>를 스스로 수정하고 검증하는 것입니다.
             음성 인식은 whisper.cpp/API STT 어댑터가 맡고, 표현은 EXAONE이, 판단과 실행은 메인 에이전트 API가 맡습니다.
           </p>
@@ -89,7 +89,7 @@
           </p>
           <p>
             사람은 같은 단어를 들어도 처한 상황과 경험에 따라 다른 기억을 연상합니다. OBA Agent는
-            MISO에 저장된 온톨로지를 그대로 검색하는 데서 멈추지 않고, 경험에 따라 달라지는
+            온톨로지/메모리 역할로 설계한 MISO 워크플로우를 호출하고, 에이전트 자신의 작업 경험과 실패 이력에 따라 달라지는
             <strong>recall policy</strong>를 만들고 검증하고 배포하는 것을 핵심 설계 대상으로 둡니다.
           </p>
         </div>
@@ -122,7 +122,7 @@
             <span class="number">01</span>
             <h3>Contextual Recall Policy</h3>
             <p>
-              같은 기억도 작업 목적, 상황, 사용자 경험에 따라 다른 edge와 관점으로 떠올립니다.
+              같은 기억도 작업 목적, 상황, 에이전트의 과거 작업 경험에 따라 다른 edge와 관점으로 떠올립니다.
               OBA의 핵심 자기진화 대상입니다.
             </p>
           </article>
@@ -130,7 +130,7 @@
             <span class="number">02</span>
             <h3>Self-Evolving Association</h3>
             <p>
-              사용자의 수정, 실패, 반복 패턴을 보고 다음에 어떤 기억을 먼저 떠올릴지 candidate policy를 만들고 검증합니다.
+              에이전트의 작업 경험, 실패, 사용자 피드백을 보고 다음에 어떤 기억을 먼저 떠올릴지 candidate policy를 만들고 검증합니다.
             </p>
           </article>
           <article class="feature-card">
@@ -151,9 +151,9 @@
           </article>
           <article class="feature-card">
             <span class="number">05</span>
-            <h3>MISO Ontology Workflows</h3>
+            <h3>MISO Workflow Memory</h3>
             <p>
-              MISO는 메인 두뇌가 아니라 경험 memory와 workflow ontology 계층입니다.
+              MISO 자체가 메인 두뇌나 memory DB가 아니라, MISO 워크플로우를 온톨로지/메모리 계층처럼 사용합니다.
               회상 결과는 메인 에이전트 API가 다시 판단합니다.
             </p>
           </article>
@@ -200,8 +200,8 @@
             <strong>Gemini 3.5 Flash via OpenRouter</strong>
           </div>
           <div class="stack-item">
-            <span>Ontology / Workflow</span>
-            <strong>MISO YAML · Memory Ontology · Workflow API</strong>
+            <span>Workflow Memory</span>
+            <strong>MISO Workflows · Ontology/Memory YAML</strong>
           </div>
           <div class="stack-item">
             <span>External APIs</span>
@@ -229,7 +229,7 @@
 
     <footer class="footer">
       <strong>OBA Agent</strong>
-      <span>경험에 따라 연상법을 스스로 고치는 개인화 에이전트</span>
+      <span>자신의 작업 경험에 따라 연상법을 스스로 고치는 개인화 에이전트</span>
     </footer>
   </body>
 </html>
