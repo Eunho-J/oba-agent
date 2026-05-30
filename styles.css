@@ -216,13 +216,15 @@ h3 {
   line-height: 1.62;
 }
 
-.pipeline {
+.pipeline,
+.recall-list {
   display: grid;
   gap: 10px;
   margin: 14px 0;
 }
 
-.pipeline div {
+.pipeline div,
+.recall-list div {
   display: grid;
   grid-template-columns: 92px 1fr;
   gap: 4px 12px;
@@ -232,14 +234,16 @@ h3 {
   background: #f5f8fc;
 }
 
-.pipeline span {
+.pipeline span,
+.recall-list span {
   grid-row: span 2;
   color: var(--muted);
   font-size: 12px;
   font-weight: 850;
 }
 
-.pipeline strong {
+.pipeline strong,
+.recall-list strong {
   font-size: 17px;
 }
 
