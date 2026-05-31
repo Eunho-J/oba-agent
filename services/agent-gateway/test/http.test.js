@@ -88,6 +88,16 @@ async function postRaw(baseUrl, path, raw) {
   return { status: response.status, body: await response.json() };
 }
 
+async function getJson(baseUrl, path) {
+  const response = await fetch(`${baseUrl}${path}`);
+  return { status: response.status, body: await response.json() };
+}
+
+async function deleteJson(baseUrl, path) {
+  const response = await fetch(`${baseUrl}${path}`, { method: "DELETE" });
+  return { status: response.status, body: await response.json() };
+}
+
 function commonsFetchFixture() {
   return async () => jsonResponse({
     query: {
@@ -185,6 +195,88 @@ test("POST /turn returns EXAONE final answer with main-agent metadata", async ()
     assert.doesNotMatch(finalAnswerCall.messages.at(-1).content, /\[user\]\s*hello\s*\[\/user\]/);
     assert.match(finalAnswerCall.messages.at(-1).content, /\[agent\]\s*plain final\s*\[\/agent\]/);
   });
+});
+
+test("server transcript survives refresh lookup and reset clears server-side state", async () => {
+  const memoryRoot = await fs.mkdtemp(path.join(os.tmpdir(), "oba-history-"));
+  const provider = {
+    name: "scripted",
+    async complete() {
+      return {
+        id: "resp_history_main",
+        choices: [{ message: { content: "plain final" } }]
+      };
+    }
+  };
+  const lmStudioClient = {
+    name: "lmstudio-exaone",
+    model: "exaone-4.0-1.2b",
+    baseUrl: "http://127.0.0.1:1234/v1",
+    async complete(request) {
+      if (request?.metadata?.feature === "exaone.input_translation") {
+        const rawUser = extractTaggedBlock(request.messages.at(-1).content, "user");
+        return {
+          id: "resp_history_input",
+          model: "exaone-4.0-1.2b",
+          choices: [{ message: { content: `[agent]${rawUser}[/agent]` } }]
+        };
+      }
+      return {
+        id: "resp_history_final",
+        model: "exaone-4.0-1.2b",
+        choices: [{ message: { content: "exaone final: plain final" } }]
+      };
+    }
+  };
+  const server = createServer({ context: { memoryRoot }, mcpServers: {} }, {
+    provider,
+    lmStudioClient,
+    logger: { event: () => {} }
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const { port } = server.address();
+  const baseUrl = `http://127.0.0.1:${port}`;
+  try {
+    const conversationId = "shared-browser-ui";
+    const turn = await postJson(baseUrl, "/turn", {
+      conversationId,
+      message: "서버 대화 복원 테스트"
+    });
+    assert.equal(turn.status, 200);
+    assert.equal(turn.body.answer, "exaone final: plain final");
+
+    const history = await getJson(
+      baseUrl,
+      `/conversations/history?conversationId=${encodeURIComponent(conversationId)}`
+    );
+    assert.equal(history.status, 200);
+    assert.equal(history.body.ok, true);
+    assert.equal(history.body.conversationId, conversationId);
+    assert.equal(history.body.messages.length, 2);
+    assert.equal(history.body.messages[0].role, "user");
+    assert.equal(history.body.messages[0].text, "서버 대화 복원 테스트");
+    assert.equal(history.body.messages[1].role, "assistant");
+    assert.equal(history.body.messages[1].kind, "final");
+    assert.equal(history.body.messages[1].text, "exaone final: plain final");
+    assert.equal(history.body.messages[1].metadata.mainAgentAnswer, "plain final");
+
+    const reset = await deleteJson(
+      baseUrl,
+      `/conversations/history?conversationId=${encodeURIComponent(conversationId)}`
+    );
+    assert.equal(reset.status, 200);
+    assert.deepEqual(reset.body.messages, []);
+
+    const emptyHistory = await getJson(
+      baseUrl,
+      `/conversations/history?conversationId=${encodeURIComponent(conversationId)}`
+    );
+    assert.equal(emptyHistory.status, 200);
+    assert.deepEqual(emptyHistory.body.messages, []);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+    await fs.rm(memoryRoot, { recursive: true, force: true });
+  }
 });
 
 test("POST /turn attaches ordered inline ggui surfaces returned by main-agent tool calls", async () => {

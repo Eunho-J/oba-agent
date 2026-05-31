@@ -60,12 +60,12 @@ export function buildFinalAnswerMessages({ mainAgentAnswer }) {
     {
       role: "system",
       content: [
-        "너는 OBA의 최종 사용자 응답 레이어다.",
-        "메인 에이전트가 이미 판단, 도구 사용, 실행 여부 확인을 마쳤다.",
-        "메인 에이전트 결과에 없는 사실, 근거, 파일명, 실행 완료, 다음 상태를 절대 추가하지 마라.",
-        "메인 에이전트 결과에 파일 목록, 코드블록, 표, 번호 목록, 도구 결과가 있으면 생략하거나 요약하지 말고 구조와 핵심 항목을 그대로 보존해라.",
-        "짧은 결과만 자연스러운 한국어 한 문단으로 다듬고, 긴 결과는 원래 줄바꿈과 목록을 유지해라.",
-        "확신이 없으면 새로 추측하지 말고 메인 에이전트 결과를 그대로 전달해라."
+        "너는 문장 다듬기 담당이다.",
+        "[agent] 안의 문장을 사용자에게 보여줄 최종 문장으로 다듬는다.",
+        "새 사실, 추론, 근거, 실행 결과를 추가하지 마라.",
+        "내부 구조나 처리 과정을 언급하지 마라.",
+        "원문이 자연스러우면 그대로 둔다.",
+        "목록, 표, 코드블록, 파일명, 숫자, 링크는 구조와 내용을 유지한다."
       ].join(" ")
     },
     {
@@ -84,13 +84,12 @@ export function buildInputTranslationMessages({ userMessage }) {
     {
       role: "system",
       content: [
-        "너는 OBA의 입력 번역/정규화 레이어다.",
-        "사용자의 [user] 입력을 메인 에이전트가 처리하기 좋은 요청으로 바꾼다.",
-        "출력은 반드시 [agent]와 [/agent] 사이의 요청문만 포함해라.",
-        "입력 [user] 블록을 그대로 다시 출력하거나, 메타 설명(예: 메인 에이전트에게 요청합니다)을 덧붙이지 마라.",
-        "사용자 입력이 짧은 인사(예: 안녕, hi)라면 의미를 과장하거나 장문으로 확장하지 말고 같은 톤의 짧은 요청으로 유지해라.",
-        "의도, 제약, 파일명, 경로, 언어, 정서적 뉘앙스는 보존하고 새로운 사실이나 실행 결과를 만들지 마라.",
-        "도구 사용 여부나 UI 첨부 여부는 메인 에이전트가 판단한다."
+        "너는 문장 교정자다.",
+        "[user] 안의 문장을 의미 변경 없이 맞춤법, 띄어쓰기, 조사만 교정한다.",
+        "답변, 인사, 질문, 해석, 요약, 일반화, 추가 정보는 금지다.",
+        "원문이 자연스러우면 그대로 둔다.",
+        "고유명사, 숫자, 파일명, 경로, 비교 대상, 출력 형식은 그대로 둔다.",
+        "출력은 반드시 [agent]와 [/agent] 사이에 교정된 문장만 넣는다."
       ].join(" ")
     },
     {
@@ -156,7 +155,7 @@ export function normalizeMainAgentInput({ userMessage, translatedContent }) {
       reason: "OVER_EXPANDED_TRANSLATION"
     };
   }
-  if (isSimpleGreeting(original) && !isSafeGreetingEquivalent(original, extracted)) {
+  if (isSimpleGreeting(original) && normalizeForComparison(original) !== normalizeForComparison(extracted)) {
     return {
       text: original,
       fallbackToOriginal: true,

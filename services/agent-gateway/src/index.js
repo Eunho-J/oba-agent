@@ -21,6 +21,12 @@ import { createLmStudioClient } from "./clients/exaone.js";
 import { stageSelfImprovementCandidates, runSelfImprovementRegistrySmoke } from "./self-improvement.js";
 import { transcribeVoiceRequest } from "./voice/whisper.js";
 import { createSafeHookRunner, runHooksSafely } from "./engine/hooks.js";
+import {
+  appendServerTranscript,
+  readServerTranscript,
+  resetServerConversation,
+  resolveUiConversationId
+} from "./server-transcript.js";
 
 const config = loadConfig();
 
@@ -50,21 +56,22 @@ export function createServer(appConfig = config, deps = {}) {
     : createRuntimeRegistry({ workspace: deps.workspace, mcpAdapter, fetchImpl });
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+    "Access-Control-Allow-Methods": "GET,POST,DELETE,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type"
   };
 
   const server = http.createServer(async (req, res) => {
     try {
+      const url = new URL(req.url || "/", "http://localhost");
       if (req.method === "OPTIONS") {
         return sendNoContent(res, 204, corsHeaders);
       }
 
-      if (req.method === "GET" && req.url === "/health") {
+      if (req.method === "GET" && url.pathname === "/health") {
         return sendJson(res, 200, { ok: true }, corsHeaders);
       }
 
-      if (req.method === "GET" && req.url === "/providers/health") {
+      if (req.method === "GET" && url.pathname === "/providers/health") {
         const providers = await collectProvidersHealth({
           appConfig,
           provider,
@@ -74,7 +81,26 @@ export function createServer(appConfig = config, deps = {}) {
         return sendJson(res, 200, { ok: true, providers }, corsHeaders);
       }
 
-      if (req.method === "POST" && req.url === "/turn") {
+      if (req.method === "GET" && url.pathname === "/conversations/history") {
+        const conversationId = resolveUiConversationId(url.searchParams.get("conversationId"));
+        const transcript = await readServerTranscript(memoryStore, conversationId);
+        return sendJson(res, 200, { ok: true, ...transcript }, corsHeaders);
+      }
+
+      if (req.method === "DELETE" && url.pathname === "/conversations/history") {
+        const conversationId = resolveUiConversationId(url.searchParams.get("conversationId"));
+        const transcript = await resetServerConversation(memoryStore, conversationId);
+        return sendJson(res, 200, { ok: true, ...transcript }, corsHeaders);
+      }
+
+      if (req.method === "POST" && url.pathname === "/conversations/reset") {
+        const body = await readJson(req);
+        const conversationId = resolveUiConversationId(body.conversationId);
+        const transcript = await resetServerConversation(memoryStore, conversationId);
+        return sendJson(res, 200, { ok: true, ...transcript }, corsHeaders);
+      }
+
+      if (req.method === "POST" && url.pathname === "/turn") {
         const body = await readJson(req);
         validateTurnInput(body);
         const registry = await registryReady;
@@ -89,10 +115,11 @@ export function createServer(appConfig = config, deps = {}) {
           logger,
           body
         });
+        await persistUiTranscript(memoryStore, body, result);
         return sendJson(res, 200, result, corsHeaders);
       }
 
-      if (req.method === "POST" && req.url === "/agent/turn" && appConfig.enableAgentTurnAlias) {
+      if (req.method === "POST" && url.pathname === "/agent/turn" && appConfig.enableAgentTurnAlias) {
         const body = await readJson(req);
         validateTurnInput(body);
         const registry = await registryReady;
@@ -107,10 +134,11 @@ export function createServer(appConfig = config, deps = {}) {
           logger,
           body
         });
+        await persistUiTranscript(memoryStore, body, result);
         return sendJson(res, 200, result, corsHeaders);
       }
 
-      if (req.method === "POST" && req.url === "/voice/transcribe") {
+      if (req.method === "POST" && url.pathname === "/voice/transcribe") {
         const result = await transcribeVoiceRequest(req, {
           config: appConfig.voice || {},
           transcriber: deps.voiceTranscriber
@@ -118,25 +146,25 @@ export function createServer(appConfig = config, deps = {}) {
         return sendJson(res, 200, result, corsHeaders);
       }
 
-      if (req.method === "POST" && req.url === "/actions/apifuse/discover") {
+      if (req.method === "POST" && url.pathname === "/actions/apifuse/discover") {
         const body = await readJson(req);
         const result = await apifuseGuard.discover(body);
         return sendJson(res, 200, { ok: true, ...result }, corsHeaders);
       }
 
-      if (req.method === "POST" && req.url === "/actions/apifuse/prepare") {
+      if (req.method === "POST" && url.pathname === "/actions/apifuse/prepare") {
         const body = await readJson(req);
         const result = await apifuseGuard.prepareAction(body);
         return sendJson(res, 200, { ok: true, ...result }, corsHeaders);
       }
 
-      if (req.method === "POST" && req.url === "/actions/apifuse/execute") {
+      if (req.method === "POST" && url.pathname === "/actions/apifuse/execute") {
         const body = await readJson(req);
         const result = await apifuseGuard.executeConfirmed(body);
         return sendJson(res, 200, { ok: true, ...result }, corsHeaders);
       }
 
-      if (req.method === "POST" && req.url === "/workflows/recall/run") {
+      if (req.method === "POST" && url.pathname === "/workflows/recall/run") {
         const body = await readJson(req);
         try {
           const result = await runGatewayWorkflow(body, {
@@ -153,7 +181,7 @@ export function createServer(appConfig = config, deps = {}) {
         }
       }
 
-      if (req.method === "POST" && req.url === "/self-improvement/candidates") {
+      if (req.method === "POST" && url.pathname === "/self-improvement/candidates") {
         const body = await readJson(req);
         const result = await stageSelfImprovementCandidates(body, {
           root: deps.workspace?.root || process.cwd()
@@ -161,7 +189,7 @@ export function createServer(appConfig = config, deps = {}) {
         return sendJson(res, 200, result, corsHeaders);
       }
 
-      if (req.method === "POST" && req.url === "/self-improvement/registry-smoke") {
+      if (req.method === "POST" && url.pathname === "/self-improvement/registry-smoke") {
         const body = await readJson(req);
         const result = await runSelfImprovementRegistrySmoke(body, {
           root: deps.workspace?.root || process.cwd()
@@ -169,14 +197,14 @@ export function createServer(appConfig = config, deps = {}) {
         return sendJson(res, 200, result, corsHeaders);
       }
 
-      if (req.method === "POST" && req.url === "/ggui/render") {
+      if (req.method === "POST" && url.pathname === "/ggui/render") {
         const body = await readJson(req);
         const intent = normalizeRenderIntentRequest(body);
         const surface = renderGguiSurface(intent);
         return sendJson(res, 200, { ok: true, surface }, corsHeaders);
       }
 
-      if (req.method === "POST" && req.url === "/ggui/image-search") {
+      if (req.method === "POST" && url.pathname === "/ggui/image-search") {
         const body = await readJson(req);
         const surface = await searchImageGallerySurface({
           query: body.query,
@@ -187,7 +215,7 @@ export function createServer(appConfig = config, deps = {}) {
         return sendJson(res, 200, { ok: true, surface }, corsHeaders);
       }
 
-      if (req.method === "POST" && req.url === "/exaone/express") {
+      if (req.method === "POST" && url.pathname === "/exaone/express") {
         const body = await readJson(req);
         const message = validateExpressInput(body);
         const completion = await completeExpressMessage(lmStudioClient, message);
@@ -227,6 +255,16 @@ async function createRuntimeRegistry({ workspace, mcpAdapter, fetchImpl }) {
   const registry = createDefaultToolRegistry({ workspace, fetchImpl });
   await mcpAdapter.discover(registry);
   return registry;
+}
+
+async function persistUiTranscript(memoryStore, body, result) {
+  if (!body.conversationId) return;
+  const conversationId = resolveUiConversationId(body.conversationId);
+  await appendServerTranscript(memoryStore, {
+    conversationId,
+    userMessage: body.message,
+    agentResult: result
+  });
 }
 
 async function readJson(req) {
@@ -465,6 +503,7 @@ async function runMainToExaoneTurn({
         inputTranslation: {
           ...(inputTranslationResult?.metadata?.debug?.mainAgent || {}),
           profile: inputTranslationResult.metadata?.profile,
+          context: inputTranslationResult.metadata?.context,
           output: mainAgentInput,
           rawOutput: inputTranslationResult.answer,
           fallbackToOriginal: inputTranslationFallback,
@@ -474,6 +513,7 @@ async function runMainToExaoneTurn({
         exaoneInput: {
           ...(inputTranslationResult?.metadata?.debug?.mainAgent || {}),
           profile: inputTranslationResult.metadata?.profile,
+          context: inputTranslationResult.metadata?.context,
           output: mainAgentInput,
           rawOutput: inputTranslationResult.answer,
           fallbackToOriginal: inputTranslationFallback,
@@ -483,6 +523,7 @@ async function runMainToExaoneTurn({
         exaoneFinal: {
           ...(exaoneResult?.metadata?.debug?.mainAgent || {}),
           profile: exaoneResult.metadata?.profile,
+          context: exaoneResult.metadata?.context,
           output: exaoneFinalRawOutput,
           rawOutput: exaoneFinalRawOutput,
           deliveredOutput: exaoneFinalDeliveredOutput,
@@ -493,6 +534,7 @@ async function runMainToExaoneTurn({
         exaone: {
           ...(exaoneResult?.metadata?.debug?.mainAgent || {}),
           profile: exaoneResult.metadata?.profile,
+          context: exaoneResult.metadata?.context,
           output: exaoneFinalRawOutput,
           rawOutput: exaoneFinalRawOutput,
           deliveredOutput: exaoneFinalDeliveredOutput,

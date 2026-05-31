@@ -13,7 +13,19 @@ import {
   View
 } from "react-native";
 
-const DEFAULT_GATEWAY_URL = "http://127.0.0.1:8787";
+const DEFAULT_GATEWAY_URL = defaultGatewayUrl();
+const DEFAULT_CONVERSATION_ID = "browser-ui";
+
+function defaultGatewayUrl() {
+  if (typeof window === "undefined" || !window.location?.hostname) {
+    return "http://127.0.0.1:8787";
+  }
+  const host = window.location.hostname;
+  if (host === "localhost" || host === "127.0.0.1" || host === "::1") {
+    return "http://127.0.0.1:8787";
+  }
+  return `http://${host}:8787`;
+}
 
 const SAMPLE_SURFACE = {
   kind: "imageGallery",
@@ -47,9 +59,12 @@ export default function App() {
   const [errorText, setErrorText] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
+  const [conversationId] = useState(DEFAULT_CONVERSATION_ID);
   const [providerStatus, setProviderStatus] = useState(null);
   const [debugEnabled, setDebugEnabled] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -58,6 +73,42 @@ export default function App() {
   const recordingChunksRef = useRef([]);
 
   const normalizedGatewayUrl = useMemo(() => gatewayUrl.trim().replace(/\/+$/, ""), [gatewayUrl]);
+
+  useEffect(() => {
+    const detectedGatewayUrl = defaultGatewayUrl();
+    if (detectedGatewayUrl !== "http://127.0.0.1:8787" && gatewayUrl === "http://127.0.0.1:8787") {
+      setGatewayUrl(detectedGatewayUrl);
+    }
+  }, [gatewayUrl]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadServerHistory() {
+      if (!normalizedGatewayUrl) return;
+      setIsLoadingHistory(true);
+      try {
+        const response = await fetch(
+          `${normalizedGatewayUrl}/conversations/history?conversationId=${encodeURIComponent(conversationId)}`
+        );
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok || body?.ok === false) {
+          throw new Error(body?.error?.message || `gateway returned ${response.status}`);
+        }
+        if (!cancelled) {
+          const restored = normalizeServerMessages(body?.messages);
+          setMessages(restored.length > 0 ? restored : INITIAL_MESSAGES);
+        }
+      } catch (error) {
+        if (!cancelled) setErrorText(`대화 복원 실패: ${formatError(error)}`);
+      } finally {
+        if (!cancelled) setIsLoadingHistory(false);
+      }
+    }
+    loadServerHistory();
+    return () => {
+      cancelled = true;
+    };
+  }, [normalizedGatewayUrl, conversationId]);
 
   async function checkConnections() {
     const baseUrl = ensureGatewayUrl();
@@ -98,7 +149,7 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: text,
-          conversationId: "browser-ui",
+          conversationId,
           toolMode: "enabled"
         })
       });
@@ -118,6 +169,31 @@ export default function App() {
       setMessages((current) => [...current, createMessage("assistant", textError, "error")]);
     } finally {
       setIsSending(false);
+    }
+  }
+
+  async function resetConversation() {
+    const baseUrl = ensureGatewayUrl();
+    if (!baseUrl) return;
+
+    setIsResetting(true);
+    setErrorText("");
+    try {
+      const response = await fetch(
+        `${baseUrl}/conversations/history?conversationId=${encodeURIComponent(conversationId)}`,
+        { method: "DELETE" }
+      );
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok || body?.ok === false) {
+        throw new Error(body?.error?.message || `gateway returned ${response.status}`);
+      }
+      setMessages(INITIAL_MESSAGES);
+      setMessageText("");
+      setProviderStatus(null);
+    } catch (error) {
+      setErrorText(`대화 초기화 실패: ${formatError(error)}`);
+    } finally {
+      setIsResetting(false);
     }
   }
 
@@ -310,6 +386,13 @@ export default function App() {
               label={debugEnabled ? "Debug On" : "Debug Off"}
               onPress={() => setDebugEnabled((value) => !value)}
               variant={debugEnabled ? "toggleOn" : "toggleOff"}
+            />
+            <ActionButton
+              label={isLoadingHistory ? "Loading" : "Reset"}
+              loading={isResetting}
+              onPress={resetConversation}
+              variant="quiet"
+              testID="reset-conversation"
             />
           </View>
         </View>
@@ -716,6 +799,25 @@ function webButtonStyle(variant, loading) {
     borderWidth: 1,
     color: "#ffffff"
   };
+}
+
+function normalizeServerMessages(messages) {
+  if (!Array.isArray(messages)) return [];
+  return messages.map((message) => {
+    const role = message?.role === "user" ? "user" : message?.role === "assistant" ? "assistant" : "";
+    const text = typeof message?.text === "string" ? message.text : "";
+    if (!role || !text) return null;
+    return {
+      id: typeof message.id === "string" && message.id ? message.id : `${role}-${Date.now()}`,
+      role,
+      text,
+      kind: typeof message.kind === "string" && message.kind ? message.kind : "message",
+      metadata: message.metadata && typeof message.metadata === "object" ? message.metadata : {},
+      toolCalls: Array.isArray(message.toolCalls) ? message.toolCalls : [],
+      provider: message.provider && typeof message.provider === "object" ? message.provider : {},
+      gguiAttachments: normalizeOptionalSurfaces(message.gguiAttachments, message.surface)
+    };
+  }).filter(Boolean);
 }
 
 function createMessage(role, text, kind = "message", extra = {}) {

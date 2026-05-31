@@ -184,6 +184,58 @@ test("agent loop attaches ggui surfaces returned by tool calls", async () => {
   assert.equal(toolResult.result.kind, "ggui.surface");
 });
 
+test("agent loop re-prompts for ggui when a structured answer has no surface", async () => {
+  const { registry } = await registryFixture({ fetchImpl: commonsFetchFixture() });
+  const providerCalls = [];
+  const provider = scriptedProvider([
+    response({
+      content: [
+        "오늘 메뉴 추천입니다.",
+        "",
+        "- **밥류**: 제육덮밥, 김치볶음밥",
+        "- **면류**: 쌀국수, 짬뽕",
+        "- **국물**: 순두부찌개, 김치찌개",
+        "- **가벼운 메뉴**: 포케, 김밥"
+      ].join("\n")
+    }, "resp_structured_without_surface"),
+    response({
+      tool_calls: [toolCall({
+        id: "call_menu_surface",
+        name: "ggui_render_surface",
+        args: {
+          type: "comparison.table",
+          payload: {
+            title: "Menu options",
+            columns: [{ key: "category", label: "Category" }, { key: "items", label: "Items" }],
+            items: [
+              { category: "밥류", items: "제육덮밥, 김치볶음밥" },
+              { category: "면류", items: "쌀국수, 짬뽕" },
+              { category: "국물", items: "순두부찌개, 김치찌개" }
+            ]
+          }
+        }
+      })]
+    }, "resp_repair_tool"),
+    response({ content: "메뉴 추천 표를 붙였습니다." }, "resp_repair_final")
+  ], providerCalls);
+
+  const result = await runAgentTurn({
+    message: "메뉴 추천해줘",
+    provider,
+    registry,
+    logger: { event: () => {} }
+  });
+
+  assert.equal(result.answer, "메뉴 추천 표를 붙였습니다.");
+  assert.equal(result.toolCalls.map((call) => call.name).join(","), "ggui_render_surface");
+  assert.equal(result.metadata.attachments.surfaces.length, 1);
+  assert.equal(result.metadata.attachments.surfaces[0].kind, "comparisonTable");
+  assert.equal(result.metadata.debug.mainAgent.gguiRepair.prompted, true);
+  assert.equal(providerCalls.some((call) => (
+    call.messages.some((message) => /Call ggui_render_surface now/.test(message.content || ""))
+  )), true);
+});
+
 test("toolMode disabled sends no tools to the provider", async () => {
   const providerCalls = [];
   const provider = scriptedProvider([response({ content: "plain answer" })], providerCalls);

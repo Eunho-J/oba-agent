@@ -68,6 +68,7 @@ export async function runAgentTurn({
   const attachedSurfaces = [];
   let providerCalls = 0;
   let toolCallCount = 0;
+  let gguiRepairPrompted = false;
 
   logger.event("turn.start", { traceId, turnId, conversationId, metadata: safeMetadata(metadata), ...meta });
 
@@ -194,6 +195,41 @@ export async function runAgentTurn({
     }
     if (calls.length === 0) {
       const answer = assistantMessage.content || "";
+      if (shouldPromptForGguiRepair({
+        message,
+        answer,
+        toolMode,
+        tools,
+        attachedSurfaces,
+        gguiRepairPrompted
+      })) {
+        gguiRepairPrompted = true;
+        debugMainAgent.gguiRepair = {
+          prompted: true,
+          reason: "STRUCTURED_ANSWER_WITHOUT_SURFACE"
+        };
+        messages.push({
+          role: "assistant",
+          content: answer
+        });
+        messages.push({
+          role: "user",
+          content: [
+            "Your previous answer is structured but has no attached UI surface.",
+            "Call ggui_render_surface now using the data already present in your previous answer.",
+            "Use comparison.table for lists, categories, rankings, options, summaries, or menu recommendations.",
+            "Do not answer in prose until after the tool result is available."
+          ].join(" ")
+        });
+        messages = compactMidTurnIfNeeded(messages, normalizedContext, memoryDebug);
+        logger.event("ggui.repair.prompted", {
+          traceId,
+          turnId,
+          reason: "STRUCTURED_ANSWER_WITHOUT_SURFACE",
+          ...meta
+        });
+        continue;
+      }
       const claimCheck = claimCheckEnabled
         ? checkFinalClaims(answer, toolEvents)
         : { passed: true, downgraded: false, answer };
@@ -465,6 +501,30 @@ function safeMetadata(metadata) {
 function extractGguiSurface(result) {
   if (result?.kind === "ggui.surface" && result.surface) return result.surface;
   return null;
+}
+
+function shouldPromptForGguiRepair({
+  message,
+  answer,
+  toolMode,
+  tools,
+  attachedSurfaces,
+  gguiRepairPrompted
+}) {
+  if (gguiRepairPrompted || toolMode === "disabled" || attachedSurfaces.length > 0) return false;
+  if (!tools.some((tool) => tool?.function?.name === "ggui_render_surface")) return false;
+  const userAskedForUi = /(?:보여|띄워|렌더|ui|표|테이블|갤러리|비교|정리|추천|목록|리스트|show|display|render|table|gallery|compare|organize|recommend)/iu.test(message || "");
+  return userAskedForUi || looksLikeStructuredAnswer(answer);
+}
+
+function looksLikeStructuredAnswer(answer) {
+  const text = String(answer || "");
+  if (text.length < 80) return false;
+  const bulletCount = (text.match(/(?:^|\n)\s*[-*]\s+\S/gu) || []).length;
+  const numberedCount = (text.match(/(?:^|\n)\s*\d+[.)]\s+\S/gu) || []).length;
+  const tableLike = /\|[^|\n]+\|[^|\n]+\|/u.test(text);
+  const categoryLines = (text.match(/(?:^|\n)\s*[-*]?\s*\*\*[^*\n]{1,30}\*\*\s*:/gu) || []).length;
+  return bulletCount >= 3 || numberedCount >= 3 || tableLike || categoryLines >= 2;
 }
 
 function snapshotMessages(messages) {

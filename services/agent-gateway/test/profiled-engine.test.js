@@ -91,6 +91,68 @@ test("POST /turn runs EXAONE input translation before main and EXAONE final expr
   }
 });
 
+test("EXAONE input and final layers stay stateless across repeated conversation turns", async () => {
+  const exaoneCalls = [];
+  let mainTurn = 0;
+  const provider = {
+    name: "fake-main",
+    async complete() {
+      mainTurn += 1;
+      return { id: `main_stateless_${mainTurn}`, choices: [{ message: { content: `main answer ${mainTurn}` } }] };
+    }
+  };
+  const lmStudioClient = {
+    name: "fake-lmstudio",
+    model: "exaone-4.0-1.2b",
+    baseUrl: "http://127.0.0.1:1234/v1",
+    async complete(request) {
+      exaoneCalls.push(request);
+      if (request?.metadata?.feature === "exaone.input_translation") {
+        const rawUser = extractTaggedBlock(request.messages.at(-1).content, "user");
+        return {
+          id: "exaone_input_stateless",
+          model: this.model,
+          choices: [{ message: { content: `[agent]${rawUser}[/agent]` } }]
+        };
+      }
+      return {
+        id: "exaone_final_stateless",
+        model: this.model,
+        choices: [{ message: { content: extractTaggedBlock(request.messages.at(-1).content, "agent") } }]
+      };
+    }
+  };
+  const server = createServer({ mcpServers: {} }, {
+    provider,
+    lmStudioClient,
+    logger: { event: () => {} }
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const { port } = server.address();
+  try {
+    const baseUrl = `http://127.0.0.1:${port}`;
+    const first = await postJson(baseUrl, "/turn", { message: "첫 번째", conversationId: "same-conversation" });
+    const second = await postJson(baseUrl, "/turn", { message: "두 번째", conversationId: "same-conversation" });
+    assert.equal(first.status, 200);
+    assert.equal(second.status, 200);
+
+    const secondInput = exaoneCalls[2];
+    const secondFinal = exaoneCalls[3];
+    assert.equal(secondInput.metadata.feature, "exaone.input_translation");
+    assert.equal(secondFinal.metadata.feature, "exaone.final_answer");
+    assert.deepEqual(secondInput.messages.map((message) => message.role), ["system", "user"]);
+    assert.deepEqual(secondFinal.messages.map((message) => message.role), ["system", "user"]);
+    assert.match(secondInput.messages.at(-1).content, /\[user\]\s*두 번째\s*\[\/user\]/);
+    assert.doesNotMatch(JSON.stringify(secondInput.messages), /첫 번째|main answer 1/u);
+    assert.match(secondFinal.messages.at(-1).content, /\[agent\]\s*main answer 2\s*\[\/agent\]/);
+    assert.doesNotMatch(JSON.stringify(secondFinal.messages), /첫 번째|main answer 1/u);
+    assert.equal(second.body.metadata.debug.inputTranslation.context.memory.enabled, false);
+    assert.equal(second.body.metadata.debug.exaoneFinal.context.memory.enabled, false);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
 test("POST /turn guards over-expanded EXAONE translation and unsupported volatile final-answer fabrications", async () => {
   const mainCalls = [];
   const provider = {
