@@ -16,20 +16,67 @@
 - ggui surface: 요청에 맞는 모바일/웹 결과 화면을 띄우는 사용자-facing 렌더 표면. workflow runtime node나 자기개선 UI가 아니다.
 - Self-evolution: Codex delegation으로 내부 후보를 만들고 검증한다. skills, hooks, system prompt도 진화 대상이지만 사용자에게 노출하지 않는다. Hook 실패는 에이전트를 죽이지 않고 진단 메시지로 남긴다.
 
-## Local
+## Install
 
 ```bash
+git clone <repo-url>
+cd oba-agent
+npm ci
+npm --prefix apps/client ci
 cp .env.example .env.local
-npm test
-npm run qa:e2e
-npm run qa:legacy-runtime-scan
+```
+
+Requirements:
+
+- Node.js 20 or newer.
+- LM Studio with an OpenAI-compatible local server on `http://127.0.0.1:1234/v1`.
+- EXAONE model loaded in LM Studio. The default model id is `exaone-4.0-1.2b`; change `OBA_LLM_MODEL`, `EXAONE_MODEL`, and `OBA_LLM_MODEL_ALLOWLIST` in `.env.local` if your LM Studio model id is different.
+- `codex-as-api` for the v1 main provider. Run it separately after `codex login`:
+
+```bash
+npx codex-as-api
+```
+
+The default gateway config expects:
+
+- main provider: `http://127.0.0.1:18080/v1`
+- main provider health: `http://127.0.0.1:18080/health`
+- LM Studio / EXAONE: `http://127.0.0.1:1234/v1`
+- gateway: `http://127.0.0.1:8787`
+- web client: Expo's printed web URL, usually `http://localhost:8081`
+
+## Run Locally
+
+Start the gateway:
+
+```bash
 npm run dev:gateway
 ```
+
+In another terminal, start the web client:
+
+```bash
+npm --prefix apps/client run web
+```
+
+Then open the web client and keep the gateway field set to `http://127.0.0.1:8787`.
+
+Quick API check:
 
 ```bash
 curl -X POST http://localhost:8787/turn \
   -H "Content-Type: application/json" \
   -d '{"message":"이 README 파일 읽고 지금 구조를 요약해줘","conversationId":"demo"}'
+```
+
+If `codex-as-api` or LM Studio is not running, health checks and tests still work, but a real `/turn` conversation can fail at the provider step.
+
+## Verify
+
+```bash
+npm test
+npm run qa:e2e
+npm run qa:legacy-runtime-scan
 ```
 
 `POST /turn` v1은 `message`만 사용자 입력 필드로 받습니다. 예전 `transcript`/`audioText` 입력은 새 엔진 계약과 섞이지 않게 `VALIDATION_ERROR`로 거부합니다.
