@@ -110,14 +110,16 @@ async function restaurantPhotoScenario() {
       payload: fixture
     }
   });
+  const surface = response.body?.surface ?? {};
+  const photos = Array.isArray(surface.images) ? surface.images : surface.photos ?? [];
   servers.push(server);
   logs.push(`restaurantPhotos status=${response.status} body=${compact(JSON.stringify(response.body))}`);
   return {
     baseUrl,
     httpStatus: response.status,
-    restaurantName: response.body?.surface?.restaurantName ?? null,
-    photoCount: response.body?.surface?.photos?.length ?? 0,
-    photoUrls: (response.body?.surface?.photos ?? []).map((photo) => photo.url)
+    restaurantName: surface.restaurantName ?? surface.title ?? null,
+    photoCount: photos.length,
+    photoUrls: photos.map((photo) => photo.url)
   };
 }
 
