@@ -1,0 +1,71 @@
+
+> oba-agent@0.1.0 test
+> node --test services/agent-gateway/test/*.test.js services/agent-gateway/test/
+*.test.mjs
+
+✔ stable prompt assembly keeps dynamic values out of the system prompt (1.458958
+ms)
+✔ logger generates span ids and redacts request bodies (9.580209ms)
+✔ parser rejects malformed tool-call JSON with a stackful error (0.430125ms)
+✔ agent loop executes a tool, appends tool result, then returns final content (7
+.214625ms)
+✔ toolMode disabled sends no tools to the provider (1.423666ms)
+✔ duplicate tool call ids do not execute twice (0.628958ms)
+✔ duplicate tool call ids with different args produce conflict result (0.610584m
+s)
+✔ agent loop stops at max provider calls (1.147167ms)
+✔ provider errors have distinct provider error code (0.216459ms)
+✔ tool errors remain tool failures and are returned to the model (0.199834ms)
+✔ claim check downgrades completion claims without tool evidence (0.085958ms)
+✔ GET /health remains available (15.650084ms)
+✔ POST /turn accepts message and returns engine response without legacy plan (8.
+29575ms)
+✔ POST /turn rejects malformed bodies and legacy transcript/audio fields (16.264
+25ms)
+✔ POST /turn with toolMode disabled sends no tools to provider (1.859084ms)
+✔ POST /agent/turn delegates to the same engine handler (1.743625ms)
+✔ POST /agent/turn is unavailable unless alias is explicitly enabled (0.879792ms
+)
+✔ configured MCP tools are discovered before /turn provider request (0.996959ms)
+✔ normalizes streamable HTTP MCP server config and expands env headers (0.673667
+ms)
+✔ rejects invalid MCP config (0.686708ms)
+✔ discovers allowed streamable HTTP MCP tools through the registry (26.952417ms)
+✔ MCP tools without explicit policy are not exposed (8.532625ms)
+✔ MCP discovery failure includes server context and stack (1.014083ms)
+✔ root package scripts cover gateway tests and explicit entrypoints (13.38625ms)
+✔ gateway package test script covers JavaScript and module tests (4.881041ms)
+﹣ codex-as-api health and minimal chat completion contract (0.518083ms) # SKIP
+✔ deriveHealthUrl follows provider base URL unless overridden (0.10925ms)
+✔ routes privacy-sensitive requests to local EXAONE (1.406167ms)
+✔ routes Korean external API requests to ApiFuse (0.128417ms)
+✔ routes workflow knowledge requests to MISO workflow memory (0.08275ms)
+✔ routes explicit self-improvement requests to the self-update pipeline (0.07533
+4ms)
+✔ falls back to Gemini for general reasoning (0.153041ms)
+✔ plans EXAONE as the mutable user-facing output layer (0.090041ms)
+✔ default registry exposes exactly read, write, edit, bash (7.171083ms)
+✔ registry rejects duplicate tool names (0.199708ms)
+✔ read reads UTF-8 files under the workspace root (6.086334ms)
+✔ read rejects paths outside the workspace root (0.725167ms)
+✔ read rejects symlinks escaping the workspace root (3.08075ms)
+✔ write creates UTF-8 files under the workspace root (2.133083ms)
+✔ write rejects outside-root paths and symlink parents (3.5585ms)
+✔ write rejects symlink file targets (3.157666ms)
+✔ edit applies focused replacements and rejects missing or ambiguous targets (4.
+268ms)
+✔ bash executes commands from an allowed cwd and returns non-zero results (19.20
+5ms)
+✔ bash rejects outside-root cwd and symlink cwd (1.416917ms)
+✔ bash timeout produces a stackful timeout error (17.346125ms)
+✔ built-in tool metadata keeps tools evolvable (0.628791ms)
+ℹ tests 46
+ℹ suites 0
+ℹ pass 45
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 256.146583
+__EXIT_CODE__:0
+

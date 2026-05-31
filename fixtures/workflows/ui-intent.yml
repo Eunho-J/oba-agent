@@ -1,0 +1,39 @@
+id: ui-intent-basic-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+inputs:
+  request:
+    type: object
+nodes:
+  - id: request
+    type: input
+    config:
+      name: request
+      default:
+        panel: inbox
+    outputs:
+      value:
+        type: object
+  - id: intent
+    type: output.uiIntent
+    config:
+      intent:
+        type: open.panel
+    inputs:
+      payload:
+        type: object
+        required: true
+    outputs:
+      intent:
+        type: object
+edges:
+  - from:
+      node: request
+      outputPort: value
+    to:
+      node: intent
+      inputPort: payload
+outputs:
+  uiIntent:
+    node: intent
+    outputPort: intent

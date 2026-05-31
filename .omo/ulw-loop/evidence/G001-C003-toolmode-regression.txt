@@ -1,0 +1,121 @@
+--- curl /turn toolMode disabled ---
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET,POST,OPTIONS
+Access-Control-Allow-Headers: Content-Type
+Date: Sun, 31 May 2026 02:30:08 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{
+  "ok": true,
+  "turnId": "turn_d4e0329aa6ed4375",
+  "traceId": "trace_58915cfe1e14495e",
+  "answer": "안녕하세요! 오늘 어떻게 도와드릴까요? 😊",
+  "toolCalls": [],
+  "provider": {
+    "name": "codex-as-api",
+    "responseId": "chatcmpl-6428095a70ff486db7fa0518"
+  },
+  "metadata": {
+    "promptVersion": "oba-main-v1.0.0",
+    "toolSchemaVersion": "oba-tools-v1.0.0",
+    "contextBlocks": [
+      "stable_prefix",
+      "tool_contracts",
+      "user_message"
+    ],
+    "toolMode": "disabled",
+    "providerCalls": 1,
+    "claimCheck": {
+      "passed": true,
+      "downgraded": false,
+      "answer": "Hello! How can I help today?"
+    },
+    "debug": {
+      "mainAgent": {
+        "provider": "codex-as-api",
+        "toolMode": "disabled",
+        "input": {
+          "messages": [
+            {
+              "role": "system",
+              "content": "You are OBA: a careful, warm, self-shaping presence that helps the user think and act. You remember by association, speak plainly, and change your working habits only after evidence and verification. Use tools when they are truly needed, report uncertainty directly, and never pretend an action succeeded.",
+              "tool_calls": []
+            },
+            {
+              "role": "user",
+              "content": "hello",
+              "tool_calls": []
+            }
+          ]
+        },
+        "providerCalls": [
+          {
+            "providerCall": 1,
+            "request": {
+              "messages": [
+                {
+                  "role": "system",
+                  "content": "You are OBA: a careful, warm, self-shaping presence that helps the user think and act. You remember by association, speak plainly, and change your working habits only after evidence and verification. Use tools when they are truly needed, report uncertainty directly, and never pretend an action succeeded.",
+                  "tool_calls": []
+                },
+                {
+                  "role": "user",
+                  "content": "hello",
+                  "tool_calls": []
+                }
+              ],
+              "tools": []
+            },
+            "response": {
+              "id": "chatcmpl-6428095a70ff486db7fa0518",
+              "model": "codex-oauth:gpt-5.5",
+              "finishReason": "stop",
+              "assistantMessage": {
+                "role": "assistant",
+                "content": "Hello! How can I help today?",
+                "toolCalls": []
+              }
+            }
+          }
+        ],
+        "toolCalls": [],
+        "output": "Hello! How can I help today?",
+        "rawOutput": "Hello! How can I help today?"
+      },
+      "exaone": {
+        "input": {
+          "messages": [
+            {
+              "role": "system",
+              "content": "너는 OBA의 최종 사용자 응답 레이어다. 메인 에이전트가 이미 판단, 도구 사용, 실행 여부 확인을 마쳤다. 새로운 사실이나 실행 완료를 꾸며내지 말고, 메인 에이전트 결과만 자연스러운 한국어로 사용자에게 전달해라. 사용자에게 필요한 경우 짧게 다음 행동을 제안하되 한 문단을 기본으로 한다."
+            },
+            {
+              "role": "user",
+              "content": "사용자 요청: hello\n메인 에이전트 결과: Hello! How can I help today?"
+            }
+          ]
+        },
+        "completion": {
+          "id": "chatcmpl-psvetab4a546vlx33qj89",
+          "model": "exaone-4.0-1.2b",
+          "finishReason": "stop",
+          "content": "안녕하세요! 오늘 어떻게 도와드릴까요? 😊"
+        },
+        "output": "안녕하세요! 오늘 어떻게 도와드릴까요? 😊",
+        "model": "exaone-4.0-1.2b"
+      }
+    },
+    "mainAgentAnswer": "Hello! How can I help today?",
+    "finalAnswerProvider": "lmstudio-exaone",
+    "finalAnswerModel": "exaone-4.0-1.2b",
+    "finalAnswerBaseUrl": "http://127.0.0.1:1234/v1",
+    "finalAnswerMode": "exaone.final"
+  }
+}
+--- server transcript ---
+
+cleanup: tmux kill-session ulw-qa-G001-C003; freed port 8791; no temp dirs created

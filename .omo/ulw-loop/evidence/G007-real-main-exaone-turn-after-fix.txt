@@ -1,0 +1,17 @@
+{
+  "httpStatus": 200,
+  "ok": true,
+  "durationMs": 1419,
+  "mainProvider": "codex-as-api",
+  "mainFirstRequestToolCount": 6,
+  "finalAnswerProvider": "lmstudio-exaone",
+  "finalAnswerModel": "exaone-4.0-1.2b",
+  "finalAnswerBaseUrl": "http://127.0.0.1:1234/v1",
+  "profiledEntryMain": "runProfiledAgentTurn",
+  "profiledEntryExaone": "runProfiledAgentTurn",
+  "exaoneRequestKeys": [
+    "messages"
+  ],
+  "exaoneForbiddenToolFields": [],
+  "answerPreview": "연결 테스트가 정상적으로 완료되었습니다."
+}

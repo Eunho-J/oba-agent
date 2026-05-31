@@ -1,0 +1,171 @@
+id: recall-safety-candidate-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+inputs:
+  query:
+    type: string
+  vaultRoot:
+    type: string
+nodes:
+  - id: input-query
+    type: input
+    config:
+      name: query
+    outputs:
+      value:
+        type: string
+  - id: search-vault
+    type: vault.search
+    config:
+      tag: meeting
+    inputs:
+      query:
+        type: string
+        required: true
+    outputs:
+      notes:
+        type: array
+  - id: seed-core
+    type: recall.seedCore
+    config:
+      budget: 800
+    outputs:
+      memories:
+        type: array
+  - id: merge-memory
+    type: flow.merge
+    config:
+      strategy: list
+    inputs:
+      search:
+        type: array
+        required: true
+      core:
+        type: array
+        required: true
+    outputs:
+      merged:
+        type: array
+  - id: select-memory
+    type: recall.select
+    config:
+      limit: 3
+      budget: 1200
+    inputs:
+      memories:
+        type: array
+        required: true
+    outputs:
+      memories:
+        type: array
+  - id: explain
+    type: recall.explain
+    config:
+      policyRef: core-default
+    inputs:
+      memories:
+        type: array
+        required: true
+    outputs:
+      explanation:
+        type: object
+  - id: redact
+    type: safety.redactSecrets
+    inputs:
+      text:
+        type: string
+        required: true
+    outputs:
+      text:
+        type: string
+  - id: candidate
+    type: candidate.writeVaultPatch
+    config:
+      target: memory/reasoning/meeting-summary.md
+      proposal:
+        operation: split-or-update
+      rationale: selected recall indicates meeting summary should stay concise
+      tests:
+        - vault hierarchy remains valid
+    outputs:
+      candidate:
+        type: object
+  - id: respond
+    type: output.respond
+    config:
+      template: "{{explanation}}::{{text}}::{{candidate.kind}}"
+    inputs:
+      explanation:
+        type: object
+        required: true
+      text:
+        type: string
+        required: true
+      candidate:
+        type: object
+        required: true
+    outputs:
+      response:
+        type: string
+edges:
+  - from:
+      node: input-query
+      outputPort: value
+    to:
+      node: search-vault
+      inputPort: query
+  - from:
+      node: search-vault
+      outputPort: notes
+    to:
+      node: merge-memory
+      inputPort: search
+  - from:
+      node: seed-core
+      outputPort: memories
+    to:
+      node: merge-memory
+      inputPort: core
+  - from:
+      node: merge-memory
+      outputPort: merged
+    to:
+      node: select-memory
+      inputPort: memories
+  - from:
+      node: select-memory
+      outputPort: memories
+    to:
+      node: explain
+      inputPort: memories
+  - from:
+      node: input-query
+      outputPort: value
+    to:
+      node: redact
+      inputPort: text
+  - from:
+      node: explain
+      outputPort: explanation
+    to:
+      node: respond
+      inputPort: explanation
+  - from:
+      node: redact
+      outputPort: text
+    to:
+      node: respond
+      inputPort: text
+  - from:
+      node: candidate
+      outputPort: candidate
+    to:
+      node: respond
+      inputPort: candidate
+outputs:
+  response:
+    node: respond
+    outputPort: response
+  candidate:
+    node: candidate
+    outputPort: candidate

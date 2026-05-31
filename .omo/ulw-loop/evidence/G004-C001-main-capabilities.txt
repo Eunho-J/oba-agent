@@ -1,0 +1,61 @@
+# G004 C001 main capability + inline ggui evidence
+{
+  "status": 200,
+  "answer": "exaone final with surfaces",
+  "firstRequestTools": [
+    "read",
+    "write",
+    "edit",
+    "bash",
+    "search_images",
+    "ggui_render_surface",
+    "apifuse.lookup"
+  ],
+  "toolCalls": [
+    {
+      "name": "apifuse.lookup",
+      "status": "success"
+    },
+    {
+      "name": "ggui_render_surface",
+      "status": "success"
+    },
+    {
+      "name": "ggui_render_surface",
+      "status": "success"
+    }
+  ],
+  "surfaceKinds": [
+    "imageGallery",
+    "comparisonTable"
+  ],
+  "firstSurface": {
+    "type": "image.gallery",
+    "kind": "imageGallery",
+    "title": "Gallery",
+    "images": [
+      {
+        "url": "https://example.com/a.jpg",
+        "caption": "A",
+        "source": "mcp.fixture"
+      }
+    ]
+  },
+  "secondSurface": {
+    "type": "comparison.table",
+    "kind": "comparisonTable",
+    "title": "Table",
+    "columns": [
+      {
+        "key": "name",
+        "label": "Name"
+      }
+    ],
+    "items": [
+      {
+        "name": "alpha"
+      }
+    ]
+  }
+}
+cleanup: removed /var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g004-c001.Ipjvt7Z5rO.mjs; server closed; port 8798 released

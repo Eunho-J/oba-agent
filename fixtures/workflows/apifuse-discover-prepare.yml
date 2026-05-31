@@ -1,0 +1,80 @@
+id: apifuse-discover-prepare-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+inputs:
+  action:
+    type: object
+  apifuseRoot:
+    type: string
+nodes:
+  - id: input-action
+    type: input
+    config:
+      name: action
+    outputs:
+      value:
+        type: object
+  - id: discover
+    type: apifuse.discover
+    inputs:
+      action:
+        type: object
+        required: true
+    outputs:
+      discovery:
+        type: object
+  - id: prepare
+    type: apifuse.prepareAction
+    inputs:
+      action:
+        type: object
+        required: true
+    outputs:
+      prepared:
+        type: object
+  - id: respond
+    type: output.respond
+    config:
+      template: "{{discovery.actionExecuted}}::{{prepared.confirmationRequired}}::{{prepared.confirmationToken.consumed}}"
+    inputs:
+      discovery:
+        type: object
+        required: true
+      prepared:
+        type: object
+        required: true
+    outputs:
+      response:
+        type: string
+edges:
+  - from:
+      node: input-action
+      outputPort: value
+    to:
+      node: discover
+      inputPort: action
+  - from:
+      node: input-action
+      outputPort: value
+    to:
+      node: prepare
+      inputPort: action
+  - from:
+      node: discover
+      outputPort: discovery
+    to:
+      node: respond
+      inputPort: discovery
+  - from:
+      node: prepare
+      outputPort: prepared
+    to:
+      node: respond
+      inputPort: prepared
+outputs:
+  response:
+    node: respond
+    outputPort: response
+  prepared:
+    node: prepare
+    outputPort: prepared

@@ -1,0 +1,37 @@
+id: invalid-loop-until-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+nodes:
+  - id: source
+    type: input
+    config:
+      name: query
+    outputs:
+      value:
+        type: string
+  - id: wait-until
+    type: loop.until
+    config:
+      condition: done
+      maxIterations: 3
+      timeoutMs: 1000
+      maxConcurrency: 1
+      onError: stop
+    inputs:
+      value:
+        type: string
+        required: true
+    outputs:
+      value:
+        type: string
+edges:
+  - from:
+      node: source
+      outputPort: value
+    to:
+      node: wait-until
+      inputPort: value
+outputs:
+  value:
+    node: wait-until
+    outputPort: value

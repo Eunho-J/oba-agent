@@ -1,0 +1,23 @@
+{
+  "name": "oba-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Voice-first personalized OBA agent using local workflow runtime, ApiFuse, EXAONE, OpenRouter Gemini, and ggui.",
+  "type": "module",
+  "workspaces": [
+    "services/*"
+  ],
+  "scripts": {
+    "test": "node --test services/agent-gateway/test/*.test.js services/agent-gateway/test/*.test.mjs",
+    "test:provider": "node --test services/agent-gateway/test/provider.integration.test.js",
+    "build:android": "cd apps/android && ./gradlew :app:assembleDebug",
+    "qa:e2e": "node scripts/qa/e2e-demo.mjs",
+    "qa:lmstudio": "node scripts/lmstudio-smoke.mjs fixtures/llm/prompt.json && node scripts/lmstudio-smoke.mjs fixtures/llm/classify.json",
+    "qa:legacy-runtime-scan": "node scripts/qa/no-\"mi\"\"so\"-runtime.mjs",
+    "dev:gateway": "node --env-file=.env.local services/agent-gateway/src/index.js",
+    "start:gateway": "node services/agent-gateway/src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

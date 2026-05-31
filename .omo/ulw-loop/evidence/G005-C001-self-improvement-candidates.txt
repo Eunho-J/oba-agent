@@ -1,0 +1,77 @@
+{
+  "httpStatus": 200,
+  "ok": true,
+  "workflowId": "evolution-candidates-v1",
+  "runId": "G005-C001-self-improvement",
+  "artifactRoot": ".oppa/self-improvement/candidates/G005-C001-self-improvement",
+  "codexImplementer": {
+    "role": "isolated-implementer",
+    "runtime": false,
+    "userVisible": false,
+    "instructionMode": "intent-and-acceptance-criteria"
+  },
+  "elements": [
+    "workflow-node-registry",
+    "codex-skill",
+    "codex-hook",
+    "main-agent-system-prompt",
+    "exaone-system-prompt"
+  ],
+  "artifactDetails": [
+    {
+      "element": "workflow-node-registry",
+      "kind": "nodeProposal",
+      "target": "local-workflow-catalog-v1",
+      "versionId": "evolution-candidates-v1:workflow-node-registry:2026-05-31T02:52:03.499Z",
+      "rollbackReady": true,
+      "rollback": {
+        "removeCandidate": true
+      },
+      "path": ".oppa/self-improvement/candidates/G005-C001-self-improvement/workflow-node-registry.json"
+    },
+    {
+      "element": "codex-skill",
+      "kind": "skillProposal",
+      "target": "codex/skills/oba-memory",
+      "versionId": "evolution-candidates-v1:codex-skill:2026-05-31T02:52:03.500Z",
+      "rollbackReady": true,
+      "rollback": {
+        "removeSkillCandidate": true
+      },
+      "path": ".oppa/self-improvement/candidates/G005-C001-self-improvement/codex-skill.json"
+    },
+    {
+      "element": "codex-hook",
+      "kind": "hookProposal",
+      "target": "codex/hooks/oba-diagnostic",
+      "versionId": "evolution-candidates-v1:codex-hook:2026-05-31T02:52:03.500Z",
+      "rollbackReady": true,
+      "rollback": {
+        "removeHookCandidate": true
+      },
+      "path": ".oppa/self-improvement/candidates/G005-C001-self-improvement/codex-hook.json"
+    },
+    {
+      "element": "main-agent-system-prompt",
+      "kind": "systemPromptProposal",
+      "target": "obaMainAgent",
+      "versionId": "evolution-candidates-v1:main-agent-system-prompt:2026-05-31T02:52:03.500Z",
+      "rollbackReady": true,
+      "rollback": {
+        "restorePromptVersion": "obaMainAgent@previous"
+      },
+      "path": ".oppa/self-improvement/candidates/G005-C001-self-improvement/main-agent-system-prompt.json"
+    },
+    {
+      "element": "exaone-system-prompt",
+      "kind": "systemPromptProposal",
+      "target": "exaoneExpressionAgent",
+      "versionId": "evolution-candidates-v1:exaone-system-prompt:2026-05-31T02:52:03.501Z",
+      "rollbackReady": true,
+      "rollback": {
+        "restorePromptVersion": "exaoneExpressionAgent@previous"
+      },
+      "path": ".oppa/self-improvement/candidates/G005-C001-self-improvement/exaone-system-prompt.json"
+    }
+  ]
+}

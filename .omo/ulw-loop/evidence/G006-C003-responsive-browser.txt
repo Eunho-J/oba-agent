@@ -1,0 +1,87 @@
+{
+  "desktop": {
+    "viewport": {
+      "width": 1000,
+      "height": 760
+    },
+    "overflow": [],
+    "pretext": [
+      {
+        "status": "ready",
+        "lines": "1"
+      },
+      {
+        "status": "ready",
+        "lines": "1"
+      },
+      {
+        "status": "ready",
+        "lines": "6"
+      },
+      {
+        "status": "ready",
+        "lines": "26"
+      },
+      {
+        "status": "ready",
+        "lines": "1"
+      },
+      {
+        "status": "ready",
+        "lines": "1"
+      },
+      {
+        "status": "ready",
+        "lines": "23"
+      },
+      {
+        "status": "ready",
+        "lines": "5"
+      }
+    ],
+    "debugVisible": true
+  },
+  "bodyHasAnswer": true,
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 780
+    },
+    "overflow": [],
+    "pretext": [
+      {
+        "status": "ready",
+        "lines": "1"
+      },
+      {
+        "status": "ready",
+        "lines": "2"
+      },
+      {
+        "status": "ready",
+        "lines": "17"
+      },
+      {
+        "status": "ready",
+        "lines": "36"
+      },
+      {
+        "status": "ready",
+        "lines": "1"
+      },
+      {
+        "status": "ready",
+        "lines": "1"
+      },
+      {
+        "status": "ready",
+        "lines": "31"
+      },
+      {
+        "status": "ready",
+        "lines": "15"
+      }
+    ],
+    "debugVisible": true
+  }
+}

@@ -1,0 +1,3 @@
+## stale forbidden source/doc scan
+scope: docs (excluding docs/vendor), apps/client, services/agent-gateway/src, services/agent-gateway/package.json, apps/client/package.json
+scan_result=pass (no stale forbidden language found)

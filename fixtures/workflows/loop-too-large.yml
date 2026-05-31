@@ -1,0 +1,39 @@
+id: loop-too-large-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+nodes:
+  - id: items
+    type: input
+    config:
+      name: items
+      default:
+        - alpha
+        - beta
+    outputs:
+      value:
+        type: array
+  - id: too-large-loop
+    type: loop.forEach
+    config:
+      maxIterations: 1001
+      timeoutMs: 10
+      maxConcurrency: 1
+      onError: fail
+    inputs:
+      items:
+        type: array
+        required: true
+    outputs:
+      items:
+        type: array
+edges:
+  - from:
+      node: items
+      outputPort: value
+    to:
+      node: too-large-loop
+      inputPort: items
+outputs:
+  items:
+    node: too-large-loop
+    outputPort: items

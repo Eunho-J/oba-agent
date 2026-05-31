@@ -1,0 +1,50 @@
+{
+  "compaction": {
+    "httpStatus": 200,
+    "ok": true,
+    "triggered": true,
+    "threshold": 0.9,
+    "model": "test-model"
+  },
+  "profileGating": {
+    "mainToolNamesFirstCall": [
+      "read",
+      "write",
+      "edit",
+      "bash",
+      "search_images",
+      "ggui_render_surface"
+    ],
+    "exaoneRequestKeys": [
+      "messages",
+      "metadata",
+      "signal",
+      "temperature"
+    ],
+    "exaoneForbidden": []
+  },
+  "modelSwitching": {
+    "finalAnswerModel": "test-model",
+    "lmStudioModel": "test-model"
+  },
+  "inlineGgui": {
+    "httpStatus": 200,
+    "ok": true,
+    "surfaceKind": "comparisonTable",
+    "surfaceTitle": "G007 dynamic comparison",
+    "attachmentKind": "comparisonTable"
+  },
+  "debug": {
+    "mainOutput": "MAIN_G007_SENTINEL: completed main turn.",
+    "exaoneOutput": "EXAONE_G007_SENTINEL: final answer from switched model."
+  },
+  "browser": {
+    "voiceValue": "G007 voice transcript: microphone.webm",
+    "voiceTranscribed": true,
+    "inlineSurfaceCount": 1,
+    "hasInlineTitle": true,
+    "hasDebug": true,
+    "finalAnswer": true
+  },
+  "browserScreenshot": ".omo/ulw-loop/evidence/G007-C002-browser-e2e.png"
+}

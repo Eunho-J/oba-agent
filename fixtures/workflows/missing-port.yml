@@ -1,0 +1,33 @@
+id: invalid-missing-port-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+nodes:
+  - id: source
+    type: input
+    config:
+      name: query
+    outputs:
+      value:
+        type: string
+  - id: parse
+    type: parse.regex
+    config:
+      pattern: "회의"
+    inputs:
+      text:
+        type: string
+        required: true
+    outputs:
+      matches:
+        type: array
+edges:
+  - from:
+      node: source
+      outputPort: missing
+    to:
+      node: parse
+      inputPort: text
+outputs:
+  matches:
+    node: parse
+    outputPort: matches

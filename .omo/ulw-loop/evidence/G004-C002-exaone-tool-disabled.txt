@@ -1,0 +1,25 @@
+# G004 C002 EXAONE tool-calling disabled at request construction evidence
+{
+  "status": 200,
+  "answer": "exaone final no tools configured",
+  "exaoneProfile": {
+    "id": "exaone-agent",
+    "tools": false,
+    "mcp": false,
+    "ggui": false,
+    "memoryLane": "expression",
+    "selfImprovementSignals": false,
+    "providerRoute": "emotional"
+  },
+  "lmStudioRequestKeys": [
+    "max_tokens",
+    "messages",
+    "metadata",
+    "model",
+    "temperature"
+  ],
+  "forbiddenToolFieldsPresent": [],
+  "registryExecuteCount": 0,
+  "mcpDiscoveryCount": 0
+}
+cleanup: removed /var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g004-c002-disabled.BletlbxrvC.mjs; gateway/fake LM Studio closed; ports 8800/8801 released

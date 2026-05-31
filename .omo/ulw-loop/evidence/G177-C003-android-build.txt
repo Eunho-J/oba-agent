@@ -1,0 +1,24 @@
+
+> oba-agent@0.1.0 build:android
+> cd apps/android && ./gradlew :app:assembleDebug
+
+
+BUILD SUCCESSFUL in 488ms
+33 actionable tasks: 33 up-to-date
+__EXIT_CODE__:0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

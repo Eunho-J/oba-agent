@@ -1,0 +1,4 @@
+Cleanup receipt:
+2026-05-30T15:57:43Z
+$ tmux ls | rg "ulw-qa-g178-c00[123]" || true
+No ulw-qa-g178-c001/c002/c003 sessions remain when no session lines are printed above.

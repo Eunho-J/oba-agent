@@ -1,0 +1,17 @@
+id: llm-model-disallowed-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+nodes:
+  - id: prompt
+    type: llm.prompt
+    config:
+      model: not-allowed-model
+      prompt: hello
+    outputs:
+      text:
+        type: string
+edges: []
+outputs:
+  text:
+    node: prompt
+    outputPort: text

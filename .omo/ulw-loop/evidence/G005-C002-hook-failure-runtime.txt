@@ -1,0 +1,34 @@
+{
+  "httpStatus": 200,
+  "ok": true,
+  "answer": "EXAONE_G005_SENTINEL: hook failure was diagnostic only.",
+  "hookDiagnostics": [
+    {
+      "type": "hook.error",
+      "event": "turn.before",
+      "hookId": "throwing-turn-before-hook",
+      "status": "diagnostic",
+      "failurePolicy": "diagnostic",
+      "exitCode": 7,
+      "signal": null,
+      "stdout": "",
+      "stderr": "intentional hook failure for G005\n",
+      "durationMs": 41
+    }
+  ],
+  "codexImplementer": {
+    "role": "isolated-implementer",
+    "runtime": false,
+    "enabled": true,
+    "available": false,
+    "healthUrl": "http://127.0.0.1:65530/health",
+    "error": {
+      "name": "Error",
+      "message": "codex implementer unavailable for G005",
+      "code": "ECONNREFUSED",
+      "stack": "Error: codex implementer unavailable for G005\n    at fetch (file:///Users/cayde/Workspace/oppa/oba-agent/[eval1]:44:19)\n    at collectSelfImprovementDiagnostics (file:///Users/cayde/Workspace/oppa/oba-agent/services/agent-gateway/src/index.js:440:28)\n    at runMainToExaoneTurn (file:///Users/cayde/Workspace/oppa/oba-agent/services/agent-gateway/src/index.js:320:44)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async Server.<anonymous> (file:///Users/cayde/Workspace/oppa/oba-agent/services/agent-gateway/src/index.js:78:24)"
+    }
+  },
+  "mainAgentAnswer": "MAIN_G005_SENTINEL: runtime continued.",
+  "finalAnswerMode": "exaone.final"
+}

@@ -1,0 +1,33 @@
+id: invalid-ggui-node-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+nodes:
+  - id: source
+    type: input
+    config:
+      name: query
+    outputs:
+      value:
+        type: string
+  - id: render
+    type: ggui.render
+    config:
+      intent: restaurantPhotoExplorer
+    inputs:
+      data:
+        type: string
+        required: true
+    outputs:
+      view:
+        type: object
+edges:
+  - from:
+      node: source
+      outputPort: value
+    to:
+      node: render
+      inputPort: data
+outputs:
+  view:
+    node: render
+    outputPort: view

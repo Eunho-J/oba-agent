@@ -1,0 +1,23 @@
+id: codex-delegation-invalid-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+nodes:
+  - id: delegation
+    type: candidate.writeCodexDelegation
+    config:
+      target: codex
+      proposal:
+        intent: change implementation directly
+        constraints:
+          - be fast
+        acceptanceCriteria:
+          - tests pass
+        codeLevelInstructions: edit services/foo.js and change function bar
+    outputs:
+      candidate:
+        type: object
+edges: []
+outputs:
+  candidate:
+    node: delegation
+    outputPort: candidate

@@ -1,0 +1,15 @@
+{
+  "restaurantName": "Samseong Noodle House",
+  "sourceUrl": "https://example.com/restaurants/samseong-noodle-house",
+  "photos": [
+    {
+      "url": "https://images.example.com/samseong/1.jpg",
+      "caption": "Main dining room at lunch",
+      "source": "reviews"
+    },
+    {
+      "url": "https://images.example.com/samseong/2.jpg",
+      "caption": "Kimchi dumplings"
+    }
+  ]
+}

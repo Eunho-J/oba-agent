@@ -1,0 +1,8 @@
+{
+  "providerId": "demo",
+  "operationId": "searchProducts",
+  "body": {
+    "query": "wireless earphones",
+    "limit": 3
+  }
+}

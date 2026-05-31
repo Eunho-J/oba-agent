@@ -1,0 +1,36 @@
+id: safety-schema-invalid-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+nodes:
+  - id: input-object
+    type: input
+    config:
+      name: object
+    outputs:
+      value:
+        type: object
+  - id: validate
+    type: safety.validateSchema
+    config:
+      schema:
+        required:
+          - title
+          - summary
+    inputs:
+      value:
+        type: object
+        required: true
+    outputs:
+      valid:
+        type: boolean
+edges:
+  - from:
+      node: input-object
+      outputPort: value
+    to:
+      node: validate
+      inputPort: value
+outputs:
+  valid:
+    node: validate
+    outputPort: valid

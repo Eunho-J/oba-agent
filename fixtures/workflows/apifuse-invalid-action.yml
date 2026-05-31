@@ -1,0 +1,18 @@
+id: apifuse-invalid-action-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+nodes:
+  - id: prepare
+    type: apifuse.prepareAction
+    config:
+      operationId: purchase
+      body:
+        item: earphones
+    outputs:
+      prepared:
+        type: object
+edges: []
+outputs:
+  prepared:
+    node: prepare
+    outputPort: prepared

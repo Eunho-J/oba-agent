@@ -1,0 +1,16 @@
+{
+  "mode": "llm.prompt",
+  "model": "exaone-4.0-1.2b",
+  "temperature": 0.4,
+  "max_tokens": 120,
+  "messages": [
+    {
+      "role": "system",
+      "content": "Reply with one short Korean sentence."
+    },
+    {
+      "role": "user",
+      "content": "로컬 테스트 진행 상태를 알려줘."
+    }
+  ]
+}

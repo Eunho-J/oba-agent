@@ -1,0 +1,19 @@
+# G002 C003 resource cancellation evidence
+tmux_session=ulw-qa-G002-C003
+script=/var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c003.kGmRTX6Ui3.mjs
+# tmux output
+{
+  "errorCode": "PROVIDER_REQUEST_FAILED",
+  "causeCode": "TURN_TIMEOUT",
+  "providerAbortObserved": true,
+  "resourceReport": {
+    "aborted": true,
+    "abortCode": "TURN_TIMEOUT",
+    "timeoutMs": 25,
+    "activeTimers": 0,
+    "tempPaths": [],
+    "cleaned": true,
+    "cleanupErrors": []
+  }
+}
+cleanup: killed tmux session ulw-qa-G002-C003 after output; removed /var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c003.kGmRTX6Ui3.mjs /var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c003-output.WmYOL2hmDb; no temp dirs or ports used

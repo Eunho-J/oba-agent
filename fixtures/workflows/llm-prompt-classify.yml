@@ -1,0 +1,91 @@
+id: llm-prompt-classify-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+inputs:
+  text:
+    type: string
+nodes:
+  - id: input-text
+    type: input
+    config:
+      name: text
+    outputs:
+      value:
+        type: string
+  - id: prompt
+    type: llm.prompt
+    config:
+      system: Reply with one short Korean sentence.
+      prompt: "{{value}}"
+      temperature: 0.2
+      maxTokens: 80
+    inputs:
+      value:
+        type: string
+        required: true
+    outputs:
+      text:
+        type: string
+  - id: classify
+    type: llm.classify
+    config:
+      system: 가장 적합한 라벨 한 개만 반환해.
+      prompt: "{{value}}"
+      labels:
+        - schedule_change
+        - status_update
+        - other
+      maxTokens: 20
+    inputs:
+      value:
+        type: string
+        required: true
+    outputs:
+      label:
+        type: string
+  - id: respond
+    type: output.respond
+    config:
+      template: "{{text}}::{{label}}"
+    inputs:
+      text:
+        type: string
+        required: true
+      label:
+        type: string
+        required: true
+    outputs:
+      response:
+        type: string
+edges:
+  - from:
+      node: input-text
+      outputPort: value
+    to:
+      node: prompt
+      inputPort: value
+  - from:
+      node: input-text
+      outputPort: value
+    to:
+      node: classify
+      inputPort: value
+  - from:
+      node: prompt
+      outputPort: text
+    to:
+      node: respond
+      inputPort: text
+  - from:
+      node: classify
+      outputPort: label
+    to:
+      node: respond
+      inputPort: label
+outputs:
+  response:
+    node: respond
+    outputPort: response
+  label:
+    node: classify
+    outputPort: label

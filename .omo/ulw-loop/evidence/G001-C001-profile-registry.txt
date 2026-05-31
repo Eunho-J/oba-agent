@@ -1,0 +1,34 @@
+✔ default agent profiles match planned capability split (0.66425ms)
+✔ normalizeAgentProfiles deep-freezes output and rejects mutation (0.263375ms)
+✔ loadConfig wraps malformed profile JSON in ConfigValidationError (0.220958ms)
+✔ loadConfig rejects malformed profile shape with typed error (0.147041ms)
+✔ exaone profile resolves to toolMode disabled and sends no tools (1.2935ms)
+✔ stable prompt assembly keeps dynamic values out of the system prompt (0.780334
+ms)
+✔ logger generates span ids and redacts request bodies (1.118959ms)
+✔ parser rejects malformed tool-call JSON with a stackful error (0.317291ms)
+✔ agent loop executes a tool, appends tool result, then returns final content (5
+.039125ms)
+✔ agent loop attaches ggui surfaces returned by tool calls (0.510959ms)
+✔ toolMode disabled sends no tools to the provider (0.654041ms)
+✔ duplicate tool call ids do not execute twice (0.283ms)
+✔ duplicate tool call ids with different args produce conflict result (0.26625ms
+)
+✔ agent loop stops at max provider calls (0.606875ms)
+✔ provider errors have distinct provider error code (0.207583ms)
+✔ tool errors remain tool failures and are returned to the model (0.184375ms)
+✔ claim check downgrades completion claims without tool evidence (0.085375ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 81.027541
+
+-- parity placeholder scan --
+rg_exit=1
+
+
+cleanup: tmux kill-session ulw-qa-G001-C001; no persistent process spawned

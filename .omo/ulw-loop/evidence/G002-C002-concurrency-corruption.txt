@@ -1,0 +1,32 @@
+# G002 C002 concurrency/corruption evidence
+tmux_session=ulw-qa-G002-C002
+memory_root=/var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c002-memory.hVsgdLDvkh
+script=/var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c002.29PUXIodIq.mjs
+# tmux output
+{
+  "concurrent": [
+    {
+      "status": 200,
+      "ok": true
+    },
+    {
+      "status": 200,
+      "ok": true
+    }
+  ],
+  "revision": 2,
+  "turns": [
+    "concurrent first",
+    "concurrent second"
+  ]
+}
+{
+  "corruptStatus": 500,
+  "corruptCode": "CONVERSATION_MEMORY_CORRUPT",
+  "corruptStillUnchanged": true
+}
+# memory files before cleanup
+/var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c002-memory.hVsgdLDvkh/g002-c002-corrupt-53e069b91a55c208/manifest.json
+/var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c002-memory.hVsgdLDvkh/g002-c002-same-c636ad6e2071c0a8/journal.jsonl
+/var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c002-memory.hVsgdLDvkh/g002-c002-same-c636ad6e2071c0a8/manifest.json
+cleanup: tmux session ulw-qa-G002-C002 exited; removed /var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c002-memory.hVsgdLDvkh /var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c002.29PUXIodIq.mjs /var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c002-output.MdNaKLYr4h; no persistent process spawned

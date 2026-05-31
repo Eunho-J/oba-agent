@@ -1,0 +1,14 @@
+AI slop cleaner gate (manual no-op/audit)
+scope: G005-G007 changed files and docs
+baseline verification: G007-C001 full suite passed before audit
+## obvious leftovers scan
+services/agent-gateway/src/index.js:600:    console.log(`agent-gateway listening on http://localhost:${config.port}`);
+apps/client/App.js:726:  return error instanceof Error ? error.message : String(error || "unknown error");
+## oversized source audit (pure LOC)
+services/agent-gateway/src/engine/hooks.js pure_loc=129
+services/agent-gateway/src/index.js pure_loc=562
+services/agent-gateway/src/config.js pure_loc=141
+services/agent-gateway/src/self-improvement.js pure_loc=168
+apps/client/App.js pure_loc=1091
+## audit result
+No behavior-changing slop cleanup applied after green regression suite. Oversized App.js remains a known single-screen Expo client module covered by Browser evidence and final export; splitting it now would be a broad architectural refactor beyond safe final cleanup.

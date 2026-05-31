@@ -1,0 +1,6 @@
+{
+  "voiceValue": "음성 전사 완료: microphone.webm",
+  "transcribed": true,
+  "autoSent": false,
+  "hasUploadInput": 0
+}

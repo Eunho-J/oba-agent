@@ -1,0 +1,60 @@
+{
+  "httpStatus": 200,
+  "ok": true,
+  "registryRoot": ".oppa/registry",
+  "before": {
+    "id": "g005_seed",
+    "versionName": "g005_seed-version"
+  },
+  "publish": {
+    "activeId": "g005_publish",
+    "previousActiveId": "g005_seed",
+    "snapshotId": "g005_seed-1780195923821-be31fd9c"
+  },
+  "afterPublish": {
+    "id": "g005_publish",
+    "versionName": "g005_publish-version"
+  },
+  "rollback": {
+    "fromVersionId": "g005_publish",
+    "toVersionId": "g005_seed"
+  },
+  "afterRollback": {
+    "id": "g005_seed",
+    "versionName": "g005_seed-version"
+  }
+}
+✔ GET /health remains available (14.512709ms)
+✔ POST /turn returns EXAONE final answer with main-agent metadata (7.425334ms)
+✔ POST /turn attaches inline ggui surface returned by a main-agent tool call (2.73175ms)
+✔ POST /turn can attach ggui from non-search data sources (3.25375ms)
+✔ POST /turn does not heuristic-attach ggui surfaces without a tool call (1.268375ms)
+✔ POST /ggui/photo-search renders live-search payloads into image gallery surfaces (1.065333ms)
+✔ POST /ggui/photo-search fails actionably when search input is empty or result set is empty (1.578833ms)
+✔ POST /turn debug metadata includes main-agent + EXAONE IO for successful read tool call (2.261875ms)
+✔ POST /turn debug metadata captures outside-root read errors without leaking file content (2.135292ms)
+✔ POST /turn rejects malformed bodies and legacy transcript/audio fields (4.361458ms)
+✔ POST /turn with toolMode disabled sends no tools to provider (1.252166ms)
+✔ POST /turn reports hook and codex implementer failures as diagnostics (1.231458ms)
+✔ POST /agent/turn delegates to the same engine handler (1.122125ms)
+✔ POST /agent/turn is unavailable unless alias is explicitly enabled (0.809417ms)
+✔ POST /voice/transcribe accepts audio paths through a whisper.cpp-compatible transcriber (1.800292ms)
+✔ POST /voice/transcribe rejects malformed non-audio uploads actionably (1.197417ms)
+✔ self-improvement endpoints stage candidates and smoke publish rollback registry state (29.551042ms)
+✔ configured MCP tools are discovered before /turn provider request (1.16125ms)
+✔ POST /turn fails actionably when EXAONE final answer generation fails (0.846583ms)
+✔ gateway responses include CORS headers and support OPTIONS preflight (1.094834ms)
+✔ evolution candidate nodes stage internal inert proposals (6.745208ms)
+✔ hook candidates must be failure-tolerant diagnostics (1.204292ms)
+✔ codex delegation candidates reject code-level instructions by default (0.661083ms)
+✔ candidate publish and rollback nodes promote and restore active registry state (90.532666ms)
+✔ candidate.publish requires candidateId (0.489792ms)
+✔ candidate.rollback requires snapshotId (0.303875ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 215.657417

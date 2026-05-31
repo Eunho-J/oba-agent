@@ -1,0 +1,728 @@
+{
+  "synced_at": "2026-05-30",
+  "source_root": "https://console.miso.gs/learn",
+  "count": 80,
+  "failed": [],
+  "pages": [
+    {
+      "navTitle": "학습하기",
+      "url": "https://console.miso.gs/learn",
+      "title": "MISO 사용자 매뉴얼",
+      "file": "pages/index.md",
+      "bytes": 1824,
+      "headings": 7,
+      "ok": true
+    },
+    {
+      "navTitle": "v2.4.2",
+      "url": "https://console.miso.gs/learn/release-notes",
+      "title": "릴리즈 노트",
+      "file": "pages/release-notes.md",
+      "bytes": 6826,
+      "headings": 14,
+      "ok": true
+    },
+    {
+      "navTitle": "미소 AI",
+      "url": "https://console.miso.gs/learn/miso-ai",
+      "title": "미소 AI",
+      "file": "pages/miso-ai.md",
+      "bytes": 1777,
+      "headings": 2,
+      "ok": true
+    },
+    {
+      "navTitle": "사진 및 파일 추가",
+      "url": "https://console.miso.gs/learn/miso-ai/file-upload",
+      "title": "사진 및 파일 추가",
+      "file": "pages/miso-ai__file-upload.md",
+      "bytes": 1002,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "이미지 생성",
+      "url": "https://console.miso.gs/learn/miso-ai/image-generation",
+      "title": "이미지 생성",
+      "file": "pages/miso-ai__image-generation.md",
+      "bytes": 1388,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "웹 검색",
+      "url": "https://console.miso.gs/learn/miso-ai/web-search",
+      "title": "웹 검색",
+      "file": "pages/miso-ai__web-search.md",
+      "bytes": 1202,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "지식 검색",
+      "url": "https://console.miso.gs/learn/miso-ai/knowledge-search",
+      "title": "지식 검색",
+      "file": "pages/miso-ai__knowledge-search.md",
+      "bytes": 1394,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "에이전트 APP 검색 및 즐겨찾기",
+      "url": "https://console.miso.gs/learn/miso-ai/agent-app",
+      "title": "에이전트 APP 검색 및 즐겨찾기",
+      "file": "pages/miso-ai__agent-app.md",
+      "bytes": 1500,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "초대장 및 회원 가입",
+      "url": "https://console.miso.gs/learn/invite-and-signup",
+      "title": "초대장 및 회원 가입",
+      "file": "pages/invite-and-signup.md",
+      "bytes": 1522,
+      "headings": 4,
+      "ok": true
+    },
+    {
+      "navTitle": "로그인과 비밀번호 재설정",
+      "url": "https://console.miso.gs/learn/login-and-password-reset",
+      "title": "로그인과 비밀번호 재설정",
+      "file": "pages/login-and-password-reset.md",
+      "bytes": 1836,
+      "headings": 3,
+      "ok": true
+    },
+    {
+      "navTitle": "앱 만들기",
+      "url": "https://console.miso.gs/learn/create-app",
+      "title": "앱 만들기",
+      "file": "pages/create-app.md",
+      "bytes": 2006,
+      "headings": 3,
+      "ok": true
+    },
+    {
+      "navTitle": "에이전트",
+      "url": "https://console.miso.gs/learn/agent",
+      "title": "에이전트",
+      "file": "pages/agent.md",
+      "bytes": 2734,
+      "headings": 3,
+      "ok": true
+    },
+    {
+      "navTitle": "워크플로우",
+      "url": "https://console.miso.gs/learn/workflow",
+      "title": "워크플로우",
+      "file": "pages/workflow.md",
+      "bytes": 8951,
+      "headings": 13,
+      "ok": true
+    },
+    {
+      "navTitle": "워크플로우 제한사항",
+      "url": "https://console.miso.gs/learn/workflow/limits",
+      "title": "워크플로우 제한사항",
+      "file": "pages/workflow__limits.md",
+      "bytes": 1975,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "앱 발행하기",
+      "url": "https://console.miso.gs/learn/publish-app",
+      "title": "앱 발행하기",
+      "file": "pages/publish-app.md",
+      "bytes": 2661,
+      "headings": 4,
+      "ok": true
+    },
+    {
+      "navTitle": "앱 설정",
+      "url": "https://console.miso.gs/learn/app-settings",
+      "title": "앱 설정",
+      "file": "pages/app-settings.md",
+      "bytes": 818,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "입력 변수",
+      "url": "https://console.miso.gs/learn/app-settings/input-variables",
+      "title": "입력 변수",
+      "file": "pages/app-settings__input-variables.md",
+      "bytes": 941,
+      "headings": 5,
+      "ok": true
+    },
+    {
+      "navTitle": "지식 검색",
+      "url": "https://console.miso.gs/learn/app-settings/knowledge-retrieval",
+      "title": "지식 검색",
+      "file": "pages/app-settings__knowledge-retrieval.md",
+      "bytes": 824,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "도구 설정",
+      "url": "https://console.miso.gs/learn/app-settings/tool-settings",
+      "title": "도구 설정",
+      "file": "pages/app-settings__tool-settings.md",
+      "bytes": 893,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "설정",
+      "url": "https://console.miso.gs/learn/app-settings/settings",
+      "title": "설정",
+      "file": "pages/app-settings__settings.md",
+      "bytes": 489,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "에이전트",
+      "url": "https://console.miso.gs/learn/app-settings/settings/agent",
+      "title": "에이전트",
+      "file": "pages/app-settings__settings__agent.md",
+      "bytes": 718,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "메시지",
+      "url": "https://console.miso.gs/learn/app-settings/settings/message",
+      "title": "메시지",
+      "file": "pages/app-settings__settings__message.md",
+      "bytes": 851,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "파일",
+      "url": "https://console.miso.gs/learn/app-settings/settings/file",
+      "title": "파일",
+      "file": "pages/app-settings__settings__file.md",
+      "bytes": 849,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "보안",
+      "url": "https://console.miso.gs/learn/app-settings/settings/security",
+      "title": "보안",
+      "file": "pages/app-settings__settings__security.md",
+      "bytes": 1134,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "음성",
+      "url": "https://console.miso.gs/learn/app-settings/settings/voice",
+      "title": "음성",
+      "file": "pages/app-settings__settings__voice.md",
+      "bytes": 558,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "자동 실행",
+      "url": "https://console.miso.gs/learn/app-settings/settings/auto-run",
+      "title": "자동 실행",
+      "file": "pages/app-settings__settings__auto-run.md",
+      "bytes": 893,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "지식",
+      "url": "https://console.miso.gs/learn/knowledge",
+      "title": "지식",
+      "file": "pages/knowledge.md",
+      "bytes": 433,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "지식 구성하기",
+      "url": "https://console.miso.gs/learn/knowledge/build-knowledge",
+      "title": "지식 구성하기",
+      "file": "pages/knowledge__build-knowledge.md",
+      "bytes": 6545,
+      "headings": 10,
+      "ok": true
+    },
+    {
+      "navTitle": "외부 데이터 연동하기",
+      "url": "https://console.miso.gs/learn/knowledge/external-data",
+      "title": "외부 데이터 연동하기",
+      "file": "pages/knowledge__external-data.md",
+      "bytes": 7720,
+      "headings": 12,
+      "ok": true
+    },
+    {
+      "navTitle": "태그 입력을 통한 지식 검색 필터링",
+      "url": "https://console.miso.gs/learn/knowledge/knowledge-tag-setting",
+      "title": "태그 입력을 통한 지식 검색 필터링",
+      "file": "pages/knowledge__knowledge-tag-setting.md",
+      "bytes": 4877,
+      "headings": 10,
+      "ok": true
+    },
+    {
+      "navTitle": "도구",
+      "url": "https://console.miso.gs/learn/tools",
+      "title": "도구",
+      "file": "pages/tools.md",
+      "bytes": 1327,
+      "headings": 5,
+      "ok": true
+    },
+    {
+      "navTitle": "MCP",
+      "url": "https://console.miso.gs/learn/tools/mcp",
+      "title": "MCP",
+      "file": "pages/tools__mcp.md",
+      "bytes": 18148,
+      "headings": 28,
+      "ok": true
+    },
+    {
+      "navTitle": "지식 도구",
+      "url": "https://console.miso.gs/learn/tools/knowledge",
+      "title": "지식 도구",
+      "file": "pages/tools__knowledge.md",
+      "bytes": 6368,
+      "headings": 17,
+      "ok": true
+    },
+    {
+      "navTitle": "AWS Athena",
+      "url": "https://console.miso.gs/learn/tools/aws-athena",
+      "title": "AWS Athena",
+      "file": "pages/tools__aws-athena.md",
+      "bytes": 1539,
+      "headings": 5,
+      "ok": true
+    },
+    {
+      "navTitle": "AWS RDS",
+      "url": "https://console.miso.gs/learn/tools/aws-rds",
+      "title": "AWS RDS",
+      "file": "pages/tools__aws-rds.md",
+      "bytes": 1133,
+      "headings": 4,
+      "ok": true
+    },
+    {
+      "navTitle": "노드 정의",
+      "url": "https://console.miso.gs/learn/node-definition",
+      "title": "노드 정의",
+      "file": "pages/node-definition.md",
+      "bytes": 10475,
+      "headings": 14,
+      "ok": true
+    },
+    {
+      "navTitle": "사용자 관리",
+      "url": "https://console.miso.gs/learn/user-management",
+      "title": "사용자 관리",
+      "file": "pages/user-management.md",
+      "bytes": 966,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "aidea",
+      "url": "https://console.miso.gs/learn/aidea",
+      "title": "aidea (Beta)",
+      "file": "pages/aidea.md",
+      "bytes": 1967,
+      "headings": 4,
+      "ok": true
+    },
+    {
+      "navTitle": "aidea 시작하기",
+      "url": "https://console.miso.gs/learn/aidea/getting-started",
+      "title": "aidea 시작하기",
+      "file": "pages/aidea__getting-started.md",
+      "bytes": 2828,
+      "headings": 6,
+      "ok": true
+    },
+    {
+      "navTitle": "아이디어를 앱으로 만들기",
+      "url": "https://console.miso.gs/learn/aidea/idea-to-app",
+      "title": "아이디어를 앱으로 만들기",
+      "file": "pages/aidea__idea-to-app.md",
+      "bytes": 3672,
+      "headings": 6,
+      "ok": true
+    },
+    {
+      "navTitle": "미소 공유하기",
+      "url": "https://console.miso.gs/learn/sharing",
+      "title": "미소 공유하기",
+      "file": "pages/sharing.md",
+      "bytes": 7839,
+      "headings": 24,
+      "ok": true
+    },
+    {
+      "navTitle": "미소 API 사용법",
+      "url": "https://console.miso.gs/learn/api-guide",
+      "title": "미소 API 사용법",
+      "file": "pages/api-guide.md",
+      "bytes": 435,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "워크플로우 API",
+      "url": "https://console.miso.gs/learn/api-guide/workflow-api",
+      "title": "워크플로우 API",
+      "file": "pages/api-guide__workflow-api.md",
+      "bytes": 7493,
+      "headings": 15,
+      "ok": true
+    },
+    {
+      "navTitle": "에이전트/챗워크플로우 API",
+      "url": "https://console.miso.gs/learn/api-guide/agent-chatflow-api",
+      "title": "에이전트 / 챗워크플로우 API",
+      "file": "pages/api-guide__agent-chatflow-api.md",
+      "bytes": 16388,
+      "headings": 35,
+      "ok": true
+    },
+    {
+      "navTitle": "API 활용 가이드",
+      "url": "https://console.miso.gs/learn/api-guide/advanced-guide",
+      "title": "에이전트/챗워크플로우 API 활용 가이드",
+      "file": "pages/api-guide__advanced-guide.md",
+      "bytes": 18158,
+      "headings": 19,
+      "ok": true
+    },
+    {
+      "navTitle": "지식 API",
+      "url": "https://console.miso.gs/learn/api-guide/knowledge-api",
+      "title": "지식 API",
+      "file": "pages/api-guide__knowledge-api.md",
+      "bytes": 22081,
+      "headings": 44,
+      "ok": true
+    },
+    {
+      "navTitle": "파일 업로드",
+      "url": "https://console.miso.gs/learn/api-guide/file-upload",
+      "title": "파일 업로드",
+      "file": "pages/api-guide__file-upload.md",
+      "bytes": 10654,
+      "headings": 21,
+      "ok": true
+    },
+    {
+      "navTitle": "미소 활용법",
+      "url": "https://console.miso.gs/learn/tips",
+      "title": "미소 활용법",
+      "file": "pages/tips.md",
+      "bytes": 722,
+      "headings": 4,
+      "ok": true
+    },
+    {
+      "navTitle": "따라하며 배우는 MISO 워크플로우",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial",
+      "title": "따라하며 배우는 MISO 워크플로우",
+      "file": "pages/tips__workflow-tutorial.md",
+      "bytes": 1457,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "1. 반복되는 회의록 작성 자동화하기",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial/lesson1",
+      "title": "반복되는 회의록 작성 자동화하기",
+      "file": "pages/tips__workflow-tutorial__lesson1.md",
+      "bytes": 1465,
+      "headings": 2,
+      "ok": true
+    },
+    {
+      "navTitle": "워크플로우 앱 생성하기",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial/lesson1/create-app",
+      "title": "워크플로우 앱 생성하기",
+      "file": "pages/tips__workflow-tutorial__lesson1__create-app.md",
+      "bytes": 3033,
+      "headings": 3,
+      "ok": true
+    },
+    {
+      "navTitle": "[레벨 1] 회의록 요약하기",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial/lesson1/level1",
+      "title": "[레벨 1] 회의록 요약하기",
+      "file": "pages/tips__workflow-tutorial__lesson1__level1.md",
+      "bytes": 12452,
+      "headings": 12,
+      "ok": true
+    },
+    {
+      "navTitle": "[레벨 2] 다양한 유형의 파일 처리하기",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial/lesson1/level2",
+      "title": "[레벨 2] 다양한 유형의 파일 처리하기",
+      "file": "pages/tips__workflow-tutorial__lesson1__level2.md",
+      "bytes": 16362,
+      "headings": 22,
+      "ok": true
+    },
+    {
+      "navTitle": "[레벨 3] 회의록 이메일 발송하기",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial/lesson1/level3",
+      "title": "[레벨 3] 회의록 이메일 발송하기",
+      "file": "pages/tips__workflow-tutorial__lesson1__level3.md",
+      "bytes": 7827,
+      "headings": 9,
+      "ok": true
+    },
+    {
+      "navTitle": "[참고] gmail로 메일 도구 설정하기",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial/lesson1/gmail",
+      "title": "[참고] gmail로 메일 도구 설정하기",
+      "file": "pages/tips__workflow-tutorial__lesson1__gmail.md",
+      "bytes": 4991,
+      "headings": 7,
+      "ok": true
+    },
+    {
+      "navTitle": "2. 설문 데이터로 VOC 분석하기",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial/google-sheet",
+      "title": "설문 데이터로 VOC 분석하기",
+      "file": "pages/tips__workflow-tutorial__google-sheet.md",
+      "bytes": 2248,
+      "headings": 2,
+      "ok": true
+    },
+    {
+      "navTitle": "[필수] Google Sheet 도구 사전준비",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial/google-sheet/notice",
+      "title": "[필수] Google Sheet 도구 사전준비",
+      "file": "pages/tips__workflow-tutorial__google-sheet__notice.md",
+      "bytes": 4879,
+      "headings": 5,
+      "ok": true
+    },
+    {
+      "navTitle": "[레벨 1] 데이터 가져오기",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial/google-sheet/level1",
+      "title": "[레벨 1] 데이터 가져오기",
+      "file": "pages/tips__workflow-tutorial__google-sheet__level1.md",
+      "bytes": 7059,
+      "headings": 10,
+      "ok": true
+    },
+    {
+      "navTitle": "[레벨 2] CSV 파일로 출력하기",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial/google-sheet/level2",
+      "title": "[레벨 2] 데이터를 분석하여 CSV 파일로 출력하기",
+      "file": "pages/tips__workflow-tutorial__google-sheet__level2.md",
+      "bytes": 17916,
+      "headings": 12,
+      "ok": true
+    },
+    {
+      "navTitle": "[레벨 3] 대량의 데이터 처리하기",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial/google-sheet/level3",
+      "title": "[레벨 3] 대량의 데이터 처리하기",
+      "file": "pages/tips__workflow-tutorial__google-sheet__level3.md",
+      "bytes": 12257,
+      "headings": 15,
+      "ok": true
+    },
+    {
+      "navTitle": "[레벨 3] Google Sheet에 데이터 추가",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial/google-sheet/level3-sheet",
+      "title": "[레벨 3] Google Sheet에 데이터 추가하기",
+      "file": "pages/tips__workflow-tutorial__google-sheet__level3-sheet.md",
+      "bytes": 11568,
+      "headings": 10,
+      "ok": true
+    },
+    {
+      "navTitle": "[레벨 4] 더 효율적으로 데이터 추가",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial/google-sheet/level4",
+      "title": "[레벨 4] 더 효율적으로 Google Sheet에 데이터 추가하기",
+      "file": "pages/tips__workflow-tutorial__google-sheet__level4.md",
+      "bytes": 6523,
+      "headings": 12,
+      "ok": true
+    },
+    {
+      "navTitle": "[참고] Google Sheet 키 발급",
+      "url": "https://console.miso.gs/learn/tips/workflow-tutorial/google-sheet/setting",
+      "title": "[참고] Google Sheet 도구 키 발급 받기",
+      "file": "pages/tips__workflow-tutorial__google-sheet__setting.md",
+      "bytes": 2903,
+      "headings": 5,
+      "ok": true
+    },
+    {
+      "navTitle": "공공데이터 오픈API 활용",
+      "url": "https://console.miso.gs/learn/tips/openapi",
+      "title": "공공데이터 오픈API 활용",
+      "file": "pages/tips__openapi.md",
+      "bytes": 10743,
+      "headings": 10,
+      "ok": true
+    },
+    {
+      "navTitle": "미소 학습하기",
+      "url": "https://console.miso.gs/learn/study",
+      "title": "미소 학습하기",
+      "file": "pages/study.md",
+      "bytes": 504,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "프롬프트 작성 가이드",
+      "url": "https://console.miso.gs/learn/study/prompt",
+      "title": "프롬프트 작성 가이드",
+      "file": "pages/study__prompt.md",
+      "bytes": 570,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "페르소나 기법",
+      "url": "https://console.miso.gs/learn/study/prompt/persona",
+      "title": "페르소나 기법",
+      "file": "pages/study__prompt__persona.md",
+      "bytes": 5676,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "가상 하이퍼파라미터",
+      "url": "https://console.miso.gs/learn/study/prompt/virtual-hyperparameter",
+      "title": "가상 하이퍼파라미터",
+      "file": "pages/study__prompt__virtual-hyperparameter.md",
+      "bytes": 2549,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "Shot",
+      "url": "https://console.miso.gs/learn/study/prompt/shot",
+      "title": "Shot",
+      "file": "pages/study__prompt__shot.md",
+      "bytes": 6222,
+      "headings": 4,
+      "ok": true
+    },
+    {
+      "navTitle": "CoT",
+      "url": "https://console.miso.gs/learn/study/prompt/cot",
+      "title": "CoT",
+      "file": "pages/study__prompt__cot.md",
+      "bytes": 3229,
+      "headings": 4,
+      "ok": true
+    },
+    {
+      "navTitle": "XML 형식으로 구조화하기",
+      "url": "https://console.miso.gs/learn/study/prompt/xml",
+      "title": "XML 형식으로 구조화하기",
+      "file": "pages/study__prompt__xml.md",
+      "bytes": 2089,
+      "headings": 2,
+      "ok": true
+    },
+    {
+      "navTitle": "예시 프롬프트 템플릿",
+      "url": "https://console.miso.gs/learn/study/prompt/sample",
+      "title": "예시 프롬프트 템플릿",
+      "file": "pages/study__prompt__sample.md",
+      "bytes": 4724,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "[실습] 에이전트 만들기",
+      "url": "https://console.miso.gs/learn/practice-agent",
+      "title": "[실습] 에이전트 만들기",
+      "file": "pages/practice-agent.md",
+      "bytes": 593,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "이메일 작성 에이전트(3개 국어)",
+      "url": "https://console.miso.gs/learn/practice-agent/3-language-email",
+      "title": "이메일 작성 에이전트(3개 국어)",
+      "file": "pages/practice-agent__3-language-email.md",
+      "bytes": 7099,
+      "headings": 1,
+      "ok": true
+    },
+    {
+      "navTitle": "복리후생 안내 에이전트",
+      "url": "https://console.miso.gs/learn/practice-agent/hr-bot",
+      "title": "복리후생 안내 에이전트",
+      "file": "pages/practice-agent__hr-bot.md",
+      "bytes": 11087,
+      "headings": 6,
+      "ok": true
+    },
+    {
+      "navTitle": "기획안 검토",
+      "url": "https://console.miso.gs/learn/aidea/prd-review",
+      "title": "미소 GenAI Playground",
+      "file": "pages/aidea__prd-review.md",
+      "bytes": 2228,
+      "headings": 0,
+      "ok": true
+    },
+    {
+      "navTitle": "워크플로우 생성",
+      "url": "https://console.miso.gs/learn/aidea/workflow-generation",
+      "title": "미소 GenAI Playground",
+      "file": "pages/aidea__workflow-generation.md",
+      "bytes": 2252,
+      "headings": 0,
+      "ok": true
+    },
+    {
+      "navTitle": "설정",
+      "url": "https://console.miso.gs/learn/aidea/settings",
+      "title": "미소 GenAI Playground",
+      "file": "pages/aidea__settings.md",
+      "bytes": 2214,
+      "headings": 0,
+      "ok": true
+    },
+    {
+      "navTitle": "부록 (용어 정리)",
+      "url": "https://console.miso.gs/learn/glossary",
+      "title": "부록(용어 정리)",
+      "file": "pages/glossary.md",
+      "bytes": 4978,
+      "headings": 17,
+      "ok": true
+    },
+    {
+      "navTitle": "플레이메이커",
+      "url": "https://console.miso.gs/learn/plaimaker",
+      "title": "플레이메이커",
+      "file": "pages/plaimaker.md",
+      "bytes": 2140,
+      "headings": 4,
+      "ok": true
+    }
+  ]
+}

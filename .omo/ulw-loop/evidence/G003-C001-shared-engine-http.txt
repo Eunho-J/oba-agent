@@ -1,0 +1,30 @@
+# G003 C001 shared profiled engine HTTP evidence
+{
+  "status": 200,
+  "answer": "exaone shared final",
+  "mainEntrypoint": "runProfiledAgentTurn",
+  "exaoneEntrypoint": "runProfiledAgentTurn",
+  "mainProfile": {
+    "id": "main-agent",
+    "tools": true,
+    "mcp": true,
+    "ggui": true,
+    "memoryLane": "reasoning",
+    "selfImprovementSignals": true,
+    "providerRoute": "main"
+  },
+  "exaoneProfile": {
+    "id": "exaone-agent",
+    "tools": false,
+    "mcp": false,
+    "ggui": false,
+    "memoryLane": "expression",
+    "selfImprovementSignals": false,
+    "providerRoute": "emotional"
+  },
+  "exaoneTools": [],
+  "mainCalls": 1,
+  "exaoneCalls": 1,
+  "exaonePrompt": "사용자 요청: shared engine check\n메인 에이전트 결과: main shared answer"
+}
+cleanup: removed /var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g003-c001.UdJkrNsiQb.mjs; server closed; port 8794 released

@@ -1,0 +1,58 @@
+{
+  "generatedAt": "2026-05-31T05:05:21.371Z",
+  "notes": [
+    {
+      "id": "core-principles",
+      "path": "memory/core/core-principles.md",
+      "title": "Core principles",
+      "tags": [
+        "core",
+        "meeting"
+      ],
+      "importance": "core",
+      "recallPolicyRef": "core-default",
+      "links": [],
+      "wikilinks": [],
+      "summary": "Always recall meeting preferences.",
+      "body": "# Core principles\n\n회의 기억은 먼저 목적, 결정, 다음 행동으로 요약한다.\n"
+    },
+    {
+      "id": "meeting-prep",
+      "path": "memory/reasoning/meeting-prep.md",
+      "title": "Meeting prep",
+      "tags": [
+        "meeting",
+        "planning"
+      ],
+      "importance": "high",
+      "recallPolicyRef": "meeting-default",
+      "links": [
+        "meeting-retro"
+      ],
+      "wikilinks": [
+        "memory/reasoning/meeting-retro"
+      ],
+      "summary": "Meeting preparation note.",
+      "body": "# Meeting prep\n\n회의 전에 목적과 의사결정 기준을 먼저 정리한다. [[memory/reasoning/meeting-retro]]\n"
+    },
+    {
+      "id": "meeting-retro",
+      "path": "memory/reasoning/meeting-retro.md",
+      "title": "Meeting retro",
+      "tags": [
+        "meeting",
+        "retro"
+      ],
+      "importance": "normal",
+      "recallPolicyRef": "meeting-default",
+      "links": [
+        "meeting-prep"
+      ],
+      "wikilinks": [
+        "memory/reasoning/meeting-prep"
+      ],
+      "summary": "Meeting retrospective note.",
+      "body": "# Meeting retro\n\n회의 뒤에는 결정사항, 미해결 질문, 다음 담당자를 남긴다. [[memory/reasoning/meeting-prep]]\n"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+✔ codex-as-api health and minimal chat completion contract (1043.634292ms)
+✔ deriveHealthUrl follows provider base URL unless overridden (0.692125ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1140.017166

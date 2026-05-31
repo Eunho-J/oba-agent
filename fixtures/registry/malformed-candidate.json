@@ -1,0 +1,28 @@
+{
+  "id": "candidate_malformed",
+  "versionName": "missing-workflow-contract-fields",
+  "reason": "Exercise registry validation failure reporting.",
+  "createdAt": "2026-05-31T00:00:00.000Z",
+  "changed": [
+    "local_workflow_registry"
+  ],
+  "contracts": {
+    "workflowCandidate": {
+      "id": "workflow_candidate_malformed",
+      "changed": [
+        "local_workflow_registry"
+      ],
+      "patches": {
+        "localWorkflowRegistry": {
+          "operations": [
+            {
+              "op": "add",
+              "path": "/nodes/broken",
+              "value": {}
+            }
+          ]
+        }
+      }
+    }
+  }
+}

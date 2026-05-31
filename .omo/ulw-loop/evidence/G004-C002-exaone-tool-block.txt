@@ -1,0 +1,15 @@
+# G004 C002 EXAONE tool-call block evidence
+{
+  "status": 200,
+  "answer": "도구 없이 답합니다.",
+  "registryExecuteCount": 0,
+  "mcpDiscoveryCount": 0,
+  "exaoneToolsSent": [],
+  "blockedEvent": {
+    "id": "call_blocked",
+    "name": "read",
+    "status": "blocked",
+    "code": "PROFILE_TOOL_CALL_BLOCKED"
+  }
+}
+cleanup: removed /var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g004-c002.DeM3gczsNz.mjs; server closed; port 8799 released

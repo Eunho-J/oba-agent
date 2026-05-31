@@ -1,0 +1,7 @@
+G005 cleanup audit
+- no tmux G005 sessions were started
+- HTTP servers were ephemeral in-process servers and closed in finally blocks
+- restored .oppa/registry active candidate to pre-G005 snapshot g002_self_improvement_seed-1780195923819-b6f5f937
+- retained .oppa/self-improvement/candidates/G005-C001-self-improvement artifacts as C001 evidence
+- current listeners on checked ports:
+- temp matches:

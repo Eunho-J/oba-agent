@@ -1,0 +1,68 @@
+{"ts":"2026-05-31T03:57:16.656Z","level":"info","event":"turn.start","traceId":"trace_ff935958e2524116","turnId":"turn_03e396ad047d494b","conversationId":"real-provider-1780199836647","metadata":["debug","evidence","profileId"],"promptVersion":"oba-main-v1.0.0","toolSchemaVersion":"oba-tools-v1.2.0","contextBlocks":["stable_prefix","tool_contracts","user_message"],"toolMode":"enabled","spanId":"span_c65b8c87113f4fe2"}
+{"ts":"2026-05-31T03:57:16.656Z","level":"info","event":"provider.request","traceId":"trace_ff935958e2524116","spanId":"span_c0d23801bc4541e1","turnId":"turn_03e396ad047d494b","providerName":"codex-as-api","providerCall":1,"toolsCount":6,"promptVersion":"oba-main-v1.0.0","toolSchemaVersion":"oba-tools-v1.2.0","contextBlocks":["stable_prefix","tool_contracts","user_message"],"toolMode":"enabled"}
+{"ts":"2026-05-31T03:57:20.268Z","level":"info","event":"provider.response","traceId":"trace_ff935958e2524116","spanId":"span_c0d23801bc4541e1","turnId":"turn_03e396ad047d494b","providerName":"codex-as-api","responseId":"chatcmpl-63ddf36b7b43462ca590ada9","promptVersion":"oba-main-v1.0.0","toolSchemaVersion":"oba-tools-v1.2.0","contextBlocks":["stable_prefix","tool_contracts","user_message"],"toolMode":"enabled"}
+{"ts":"2026-05-31T03:57:20.268Z","level":"info","event":"final.claim_check","traceId":"trace_ff935958e2524116","turnId":"turn_03e396ad047d494b","passed":false,"downgraded":true,"toolEventCount":0,"promptVersion":"oba-main-v1.0.0","toolSchemaVersion":"oba-tools-v1.2.0","contextBlocks":["stable_prefix","tool_contracts","user_message"],"toolMode":"enabled","spanId":"span_5fbc8e5cd5174e52"}
+{"ts":"2026-05-31T03:57:20.269Z","level":"info","event":"turn.complete","traceId":"trace_ff935958e2524116","turnId":"turn_03e396ad047d494b","providerCalls":1,"toolCallCount":0,"promptVersion":"oba-main-v1.0.0","toolSchemaVersion":"oba-tools-v1.2.0","contextBlocks":["stable_prefix","tool_contracts","user_message"],"toolMode":"enabled","spanId":"span_7987491c4baa4502"}
+{"ts":"2026-05-31T03:57:20.274Z","level":"info","event":"turn.start","traceId":"trace_6fe6c9c1adac4c08","turnId":"turn_1fafee0522904440","conversationId":"real-provider-1780199836647:exaone","metadata":["debug","evidence","profileId"],"promptVersion":"oba-main-v1.0.0","toolSchemaVersion":"oba-tools-v1.2.0","contextBlocks":["stable_prefix","tool_contracts","user_message"],"toolMode":"disabled","spanId":"span_a62b97ae4ad44bff"}
+{"ts":"2026-05-31T03:57:20.274Z","level":"info","event":"provider.request","traceId":"trace_6fe6c9c1adac4c08","spanId":"span_90e1f8ab227340f9","turnId":"turn_1fafee0522904440","providerName":"lmstudio-exaone","providerCall":1,"toolsCount":0,"promptVersion":"oba-main-v1.0.0","toolSchemaVersion":"oba-tools-v1.2.0","contextBlocks":["stable_prefix","tool_contracts","user_message"],"toolMode":"disabled"}
+{"ts":"2026-05-31T03:57:21.786Z","level":"info","event":"provider.response","traceId":"trace_6fe6c9c1adac4c08","spanId":"span_90e1f8ab227340f9","turnId":"turn_1fafee0522904440","providerName":"lmstudio-exaone","responseId":"chatcmpl-b4uvf2jlbkcl5js3zda19","promptVersion":"oba-main-v1.0.0","toolSchemaVersion":"oba-tools-v1.2.0","contextBlocks":["stable_prefix","tool_contracts","user_message"],"toolMode":"disabled"}
+{"ts":"2026-05-31T03:57:21.788Z","level":"info","event":"final.claim_check","traceId":"trace_6fe6c9c1adac4c08","turnId":"turn_1fafee0522904440","passed":true,"downgraded":false,"toolEventCount":0,"promptVersion":"oba-main-v1.0.0","toolSchemaVersion":"oba-tools-v1.2.0","contextBlocks":["stable_prefix","tool_contracts","user_message"],"toolMode":"disabled","spanId":"span_6e359df941ef4bda"}
+{"ts":"2026-05-31T03:57:21.788Z","level":"info","event":"turn.complete","traceId":"trace_6fe6c9c1adac4c08","turnId":"turn_1fafee0522904440","providerCalls":1,"toolCallCount":0,"promptVersion":"oba-main-v1.0.0","toolSchemaVersion":"oba-tools-v1.2.0","contextBlocks":["stable_prefix","tool_contracts","user_message"],"toolMode":"disabled","spanId":"span_497cf6fc87e74f18"}
+{
+  "httpStatus": 200,
+  "ok": true,
+  "durationMs": 5150,
+  "answerPreview": "도구 사용 기록이 확인되지 않아 추가 검증이 필요합니다.",
+  "mainAgentAnswerPreview": "완료했다고 확인할 수 있는 도구 실행 기록이 없습니다. 다시 확인이 필요합니다.",
+  "finalAnswerProvider": "lmstudio-exaone",
+  "finalAnswerModel": "exaone-4.0-1.2b",
+  "finalAnswerBaseUrl": "http://127.0.0.1:1234/v1",
+  "mainProvider": "codex-as-api",
+  "mainProviderCalls": 1,
+  "mainFirstRequestToolCount": 6,
+  "exaoneProfile": {
+    "id": "exaone-agent",
+    "tools": false,
+    "mcp": false,
+    "ggui": false,
+    "memoryLane": "expression",
+    "selfImprovementSignals": false,
+    "providerRoute": "emotional"
+  },
+  "exaoneModel": "exaone-4.0-1.2b",
+  "exaoneRequestKeys": [
+    "messages",
+    "tools"
+  ],
+  "exaoneForbiddenToolFields": [
+    "tools"
+  ],
+  "profiledEngine": {
+    "main": {
+      "entrypoint": "runProfiledAgentTurn",
+      "module": "services/agent-gateway/src/engine/profiled-agent.js",
+      "profile": {
+        "id": "main-agent",
+        "tools": true,
+        "mcp": true,
+        "ggui": true,
+        "memoryLane": "reasoning",
+        "selfImprovementSignals": true,
+        "providerRoute": "main"
+      }
+    },
+    "exaone": {
+      "entrypoint": "runProfiledAgentTurn",
+      "module": "services/agent-gateway/src/engine/profiled-agent.js",
+      "profile": {
+        "id": "exaone-agent",
+        "tools": false,
+        "mcp": false,
+        "ggui": false,
+        "memoryLane": "expression",
+        "selfImprovementSignals": false,
+        "providerRoute": "emotional"
+      }
+    }
+  }
+}

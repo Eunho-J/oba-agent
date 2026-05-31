@@ -1,0 +1,20 @@
+FINAL CODE REVIEW
+Result: APPROVE
+Architect status: CLEAR
+
+Reviewed constraints:
+- EXAONE request construction omits tool-related fields: verified by G004-C002 and G007-C002 exaoneForbidden=[]
+- Main and EXAONE share profiled engine entrypoint: covered by profiled-engine tests and G003 evidence
+- Hooks fail as diagnostics, not /turn crashes: covered by G005-C002 and http.test
+- Voice normal UX is microphone button flow, no upload input: covered by G006-C001 hasUploadInput=0
+- ggui surfaces render inline in assistant bubble: covered by G004-C003 and G007-C002 Browser screenshot
+- Compaction threshold 0.9 and model switch covered by G007-C002
+- Docs/source stale scan passed in G007-C003
+
+Quality gates:
+- git diff --check: pass
+- final verification: .omo/ulw-loop/evidence/G007-final-verification.txt (139 tests, 138 pass, 1 skipped integration; client check pass; Expo export pass)
+- AI slop audit: .omo/ulw-loop/evidence/G007-ai-slop-cleaner.txt
+
+Residual notes:
+- apps/client/App.js is still a large Expo screen module. It is covered by Browser evidence and export. Splitting it would be a separate architecture cleanup, not a correctness blocker for this goal.

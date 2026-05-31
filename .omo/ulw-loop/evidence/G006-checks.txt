@@ -1,0 +1,32 @@
+
+> oba-client@0.1.0 check
+> node --check App.js && node --check index.js
+
+✔ GET /health remains available (14.214042ms)
+✔ POST /turn returns EXAONE final answer with main-agent metadata (7.097084ms)
+✔ POST /turn attaches inline ggui surface returned by a main-agent tool call (2.697042ms)
+✔ POST /turn can attach ggui from non-search data sources (3.348083ms)
+✔ POST /turn does not heuristic-attach ggui surfaces without a tool call (1.895ms)
+✔ POST /ggui/photo-search renders live-search payloads into image gallery surfaces (1.772375ms)
+✔ POST /ggui/photo-search fails actionably when search input is empty or result set is empty (1.901583ms)
+✔ POST /turn debug metadata includes main-agent + EXAONE IO for successful read tool call (1.892667ms)
+✔ POST /turn debug metadata captures outside-root read errors without leaking file content (1.696167ms)
+✔ POST /turn rejects malformed bodies and legacy transcript/audio fields (3.896333ms)
+✔ POST /turn with toolMode disabled sends no tools to provider (0.959833ms)
+✔ POST /turn reports hook and codex implementer failures as diagnostics (1.098875ms)
+✔ POST /agent/turn delegates to the same engine handler (1.025792ms)
+✔ POST /agent/turn is unavailable unless alias is explicitly enabled (0.74875ms)
+✔ POST /voice/transcribe accepts audio paths through a whisper.cpp-compatible transcriber (2.452083ms)
+✔ POST /voice/transcribe rejects malformed non-audio uploads actionably (1.836042ms)
+✔ self-improvement endpoints stage candidates and smoke publish rollback registry state (44.678542ms)
+✔ configured MCP tools are discovered before /turn provider request (2.226875ms)
+✔ POST /turn fails actionably when EXAONE final answer generation fails (1.914ms)
+✔ gateway responses include CORS headers and support OPTIONS preflight (4.65475ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 236.780292

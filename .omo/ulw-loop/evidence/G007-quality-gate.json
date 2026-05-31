@@ -1,0 +1,36 @@
+{
+  "aiSlopCleaner": {
+    "status": "passed",
+    "evidence": ".omo/ulw-loop/evidence/G007-ai-slop-cleaner.txt"
+  },
+  "verification": {
+    "status": "passed",
+    "commands": [
+      "git diff --check",
+      "node --test services/agent-gateway/test/*.test.js services/agent-gateway/test/*.test.mjs",
+      "npm --prefix apps/client run check",
+      "cd apps/client && npx expo export --platform web --output-dir /tmp/oba-client-web-profiled-engine-final"
+    ],
+    "evidence": ".omo/ulw-loop/evidence/G007-final-verification.txt"
+  },
+  "codeReview": {
+    "recommendation": "APPROVE",
+    "architectStatus": "CLEAR",
+    "evidence": ".omo/ulw-loop/evidence/G007-final-code-review.txt"
+  },
+  "criteriaCoverage": {
+    "totalCriteria": 21,
+    "passCount": 21,
+    "adversarialClassesCovered": [
+      "invalid profile config",
+      "tool calling disabled at request construction",
+      "context compaction threshold pressure",
+      "resource cancellation cleanup",
+      "hook failure diagnostic no-crash",
+      "microphone permission denial",
+      "Pretext fallback",
+      "responsive no-overflow UI",
+      "stale docs/source scan"
+    ]
+  }
+}

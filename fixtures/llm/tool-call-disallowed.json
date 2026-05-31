@@ -1,0 +1,19 @@
+{
+  "mode": "llm.prompt",
+  "model": "exaone-4.0-1.2b",
+  "messages": [
+    {
+      "role": "user",
+      "content": "도구 호출을 시도해."
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "weather_lookup",
+        "description": "weather"
+      }
+    }
+  ]
+}

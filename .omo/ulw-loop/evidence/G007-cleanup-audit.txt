@@ -1,0 +1,8 @@
+G007 cleanup audit
+- G007 fake gateway stopped after Browser E2E
+- Expo web server on 8081 remains running for user validation
+- export artifact retained at /tmp/oba-client-web-profiled-engine
+- checked listeners:
+COMMAND   PID  USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+node    43546 cayde   37u  IPv6 0xac106bd04a4c12f4      0t0  TCP *:8081 (LISTEN)
+- temp matches:

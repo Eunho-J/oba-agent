@@ -1,0 +1,33 @@
+{
+  "aiSlopCleaner": {
+    "status": "passed",
+    "evidence": ".omx/ultragoal/ai-slop-cleaner-G037.md records a bounded changed-files cleanup pass; no masking fallback slop remains in the v1 /turn execution path."
+  },
+  "verification": {
+    "status": "passed",
+    "commands": [
+      "npm test --workspace services/agent-gateway",
+      "node --check services/agent-gateway/src/config.js && node --check services/agent-gateway/src/index.js && node --check services/agent-gateway/src/engine/agent.js && node --check services/agent-gateway/src/engine/claim-check.js && node --check services/agent-gateway/src/engine/ids.js && node --check services/agent-gateway/src/engine/logger.js && node --check services/agent-gateway/src/engine/prompt.js && node --check services/agent-gateway/src/engine/provider.js && node --check services/agent-gateway/src/engine/tool-calls.js && node --check services/agent-gateway/src/mcp/adapter.js && node --check services/agent-gateway/src/tools/builtins.js && node --check services/agent-gateway/src/tools/errors.js && node --check services/agent-gateway/src/tools/registry.js && node --check services/agent-gateway/src/tools/workspace.js && node --check services/agent-gateway/test/engine.test.js && node --check services/agent-gateway/test/http.test.js && node --check services/agent-gateway/test/mcp.test.js && node --check services/agent-gateway/test/provider.integration.test.js && node --check services/agent-gateway/test/tools.test.js",
+      "npm audit --workspace services/agent-gateway --omit=dev",
+      "git diff --check"
+    ],
+    "evidence": "Post-fix verification passed: 37 tests passed, 1 codex-as-api integration test skipped by OBA_RUN_CODEX_AS_API_TESTS gate; node --check passed over changed JS; npm audit found 0 vulnerabilities; git diff --check passed."
+  },
+  "codeReview": {
+    "recommendation": "APPROVE",
+    "architectStatus": "CLEAR",
+    "evidence": "Fresh independent review after blocker fixes returned codeReview.recommendation APPROVE and codeReview.architectStatus CLEAR with no findings.",
+    "independentReview": {
+      "codeReviewer": {
+        "agentRole": "code-reviewer",
+        "agentId": "019e78e9-f458-79b0-81fe-7f4d1d18ca49",
+        "evidence": "APPROVE. Inspected request validation, alias gating, built-in tools, symlink write rejection, MCP policy/namespacing, exact MCP SDK pin, gated codex-as-api integration, and independently reran verification."
+      },
+      "architect": {
+        "agentRole": "architect",
+        "agentId": "019e78e9-f4cf-77e0-b4ac-3994a3f3b406",
+        "evidence": "CLEAR. Verified live /turn bootstrap, fail-closed request validation, opt-in /agent/turn alias, MCP Streamable HTTP policy gate, exact built-in tool boundary, stable prompt metadata, and docs/test alignment."
+      }
+    }
+  }
+}

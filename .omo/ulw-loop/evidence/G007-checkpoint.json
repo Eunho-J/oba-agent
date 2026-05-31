@@ -1,0 +1,432 @@
+{
+  "ok": true,
+  "plan": {
+    "version": 1,
+    "createdAt": "2026-05-31T02:11:00.394Z",
+    "updatedAt": "2026-05-31T03:18:18.504Z",
+    "briefPath": ".omo/ulw-loop/019e799c-c85f-7a22-a868-75f6a58d1939/brief.md",
+    "goalsPath": ".omo/ulw-loop/019e799c-c85f-7a22-a868-75f6a58d1939/goals.json",
+    "ledgerPath": ".omo/ulw-loop/019e799c-c85f-7a22-a868-75f6a58d1939/ledger.jsonl",
+    "codexGoalMode": "aggregate",
+    "goals": [
+      {
+        "id": "G001-codex-parity-and-engine-profile-foun",
+        "title": "Codex parity and engine profile foundation. Implement and verify docs...",
+        "objective": "Codex parity and engine profile foundation. Implement and verify docs/codex-runtime-parity.md plus an AgentProfileRegistry for main-agent and exaone-agent. main-agent enables tools/MCP/ggui/reasoning memory/self-improvement signals. exaone-agent uses the same engine profile schema but disables tools/MCP/ggui execution and uses expression memory plus the emotional model route. No Codex app-server runtime.",
+        "status": "complete",
+        "successCriteria": [
+          {
+            "id": "C001",
+            "scenario": "HTTP/tmux: create Codex parity matrix and profile registry, then run node --test services/agent-gateway/test/engine-profile.test.js; dump command transcript.",
+            "userModel": "happy",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G001-C001-profile-registry.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G001-C001-profile-registry.txt: profile tests pass, parity scan rg_exit=1 means no TODO/unknown/later | cleanup: tmux kill-session ulw-qa-G001-C001; close_agent g001_profile_registry_worker; parity worker already closed",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:30:48.795Z"
+          },
+          {
+            "id": "C002",
+            "scenario": "tmux: start gateway with invalid profile config and capture typed startup/config error, proving malformed profile is rejected.",
+            "userModel": "edge",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G001-C002-invalid-profile.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G001-C002-invalid-profile.txt | cleanup: tmux kill-session ulw-qa-G001-C002; invalid config process exited; no persistent process spawned",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:31:41.977Z"
+          },
+          {
+            "id": "C003",
+            "scenario": "HTTP call: POST /turn with toolMode disabled regression fixture and confirm existing disabled-tool behavior still works after registry introduction.",
+            "userModel": "regression",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G001-C003-toolmode-regression.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G001-C003-toolmode-regression.txt | cleanup: tmux kill-session ulw-qa-G001-C003; freed port 8791; no temp dirs created",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:31:41.982Z"
+          }
+        ],
+        "attempt": 1,
+        "createdAt": "2026-05-31T02:11:00.394Z",
+        "updatedAt": "2026-05-31T02:31:51.493Z",
+        "startedAt": "2026-05-31T02:17:54.224Z",
+        "completedAt": "2026-05-31T02:31:51.493Z",
+        "evidence": "C001 .omo/ulw-loop/evidence/G001-C001-profile-registry.txt; C002 .omo/ulw-loop/evidence/G001-C002-invalid-profile.txt; C003 .omo/ulw-loop/evidence/G001-C003-toolmode-regression.txt; cleanup: all tmux sessions killed, port 8791 free, no persistent process spawned"
+      },
+      {
+        "id": "G002-context-memory-token-accounting-comp",
+        "title": "Context memory, token accounting, compaction, and resource lifecycle....",
+        "objective": "Context memory, token accounting, compaction, and resource lifecycle. Implement per-conversation memory files with manifest/journal/locks/redaction, context replay, token accounting, compaction threshold 0.9 of max context with pre-turn and mid-turn checks, and TurnResourceManager cancellation/timeout/cleanup/shutdown behavior.",
+        "status": "complete",
+        "successCriteria": [
+          {
+            "id": "C001",
+            "scenario": "HTTP call: configure OBA_CONTEXT_WINDOW_TOKENS=1000 and OBA_CONTEXT_COMPACTION_THRESHOLD=0.9, send same conversation turns totaling >900 estimated tokens, capture /turn debug showing compaction summary and context revision.",
+            "userModel": "happy",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G002-C001-compaction-http.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G002-C001-compaction-http.txt; cleanup audit .omo/ulw-loop/evidence/G002-cleanup-audit.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:40:15.940Z"
+          },
+          {
+            "id": "C002",
+            "scenario": "tmux: run two concurrent same-conversation /turn calls and a corrupt conversation file case; capture serialization/typed error and no corrupted write.",
+            "userModel": "edge",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G002-C002-concurrency-corruption.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G002-C002-concurrency-corruption.txt; cleanup audit .omo/ulw-loop/evidence/G002-cleanup-audit.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:40:06.908Z"
+          },
+          {
+            "id": "C003",
+            "scenario": "tmux: cancel a hung fake provider turn, then capture resource report proving provider abort, timer cleanup, and no leftover temp/process state.",
+            "userModel": "regression",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G002-C003-resource-cancel.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G002-C003-resource-cancel.txt; cleanup audit .omo/ulw-loop/evidence/G002-cleanup-audit.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:40:06.918Z"
+          }
+        ],
+        "attempt": 1,
+        "createdAt": "2026-05-31T02:11:00.394Z",
+        "updatedAt": "2026-05-31T02:40:26.665Z",
+        "startedAt": "2026-05-31T02:31:55.391Z",
+        "completedAt": "2026-05-31T02:40:26.665Z",
+        "evidence": "C001 .omo/ulw-loop/evidence/G002-C001-compaction-http.txt; C002 .omo/ulw-loop/evidence/G002-C002-concurrency-corruption.txt; C003 .omo/ulw-loop/evidence/G002-C003-resource-cancel.txt; tests: node --test context-compaction/resource-manager/engine/http = 37 pass; cleanup audit .omo/ulw-loop/evidence/G002-cleanup-audit.txt"
+      },
+      {
+        "id": "G003-shared-profiled-engine-and-main-to-e",
+        "title": "Shared profiled engine and main-to-EXAONE orchestration. Refactor /tu...",
+        "objective": "Shared profiled engine and main-to-EXAONE orchestration. Refactor /turn so both main-agent and exaone-agent run through one shared profiled engine entrypoint. Main runs first, EXAONE runs second via LM Studio + exaone-4.0-1.2b by default, and model routing is swappable by env/config.",
+        "status": "complete",
+        "successCriteria": [
+          {
+            "id": "C001",
+            "scenario": "HTTP call: POST /turn against fake main provider and fake LM Studio; capture debug showing runProfiledAgentTurn(main-agent) then runProfiledAgentTurn(exaone-agent), same engine module, final EXAONE answer.",
+            "userModel": "happy",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G003-C001-shared-engine-http.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G003-C001-shared-engine-http.txt; cleanup audit .omo/ulw-loop/evidence/G003-cleanup-audit.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:43:54.013Z"
+          },
+          {
+            "id": "C002",
+            "scenario": "tmux: run /turn with unsupported emotional provider/model config and capture typed config/provider error without partial runtime startup.",
+            "userModel": "edge",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G003-C002-bad-model-config.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G003-C002-bad-model-config.txt; cleanup audit .omo/ulw-loop/evidence/G003-cleanup-audit.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:43:54.067Z"
+          },
+          {
+            "id": "C003",
+            "scenario": "HTTP call: switch OBA_EMOTIONAL_MODEL_NAME=test-model and capture fake LM Studio request body using test-model while main provider behavior remains unchanged.",
+            "userModel": "regression",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G003-C003-model-switch.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G003-C003-model-switch.txt; cleanup audit .omo/ulw-loop/evidence/G003-cleanup-audit.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:43:54.124Z"
+          }
+        ],
+        "attempt": 1,
+        "createdAt": "2026-05-31T02:11:00.394Z",
+        "updatedAt": "2026-05-31T02:44:05.885Z",
+        "startedAt": "2026-05-31T02:40:35.236Z",
+        "completedAt": "2026-05-31T02:44:05.885Z",
+        "evidence": "C001 .omo/ulw-loop/evidence/G003-C001-shared-engine-http.txt; C002 .omo/ulw-loop/evidence/G003-C002-bad-model-config.txt; C003 .omo/ulw-loop/evidence/G003-C003-model-switch.txt; tests: node --test profiled-engine/http/engine-profile/lmstudio = 32 pass; cleanup audit .omo/ulw-loop/evidence/G003-cleanup-audit.txt"
+      },
+      {
+        "id": "G004-capability-gating-and-dynamic-ggui-i",
+        "title": "Capability gating and dynamic ggui inline attachments. Convert tools,...",
+        "objective": "Capability gating and dynamic ggui inline attachments. Convert tools, MCP, and ggui into profile-gated capability modules. Main receives allowed tools/MCP/ggui; EXAONE receives no tool specs and no MCP. ggui attachments render inline inside assistant answer bubbles and support multiple dynamic surfaces with provenance/error states.",
+        "status": "complete",
+        "successCriteria": [
+          {
+            "id": "C001",
+            "scenario": "HTTP call: fake MCP + ggui turn; capture main provider receiving allowed MCP/ggui tools and response containing multiple inline gguiAttachments with provenance.",
+            "userModel": "happy",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G004-C001-main-capabilities.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G004-C001-main-capabilities.txt; cleanup audit .omo/ulw-loop/evidence/G004-cleanup-audit.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:48:17.072Z"
+          },
+          {
+            "id": "C002",
+            "scenario": "HTTP call: fake LM Studio captures EXAONE request body and verifies model/tool-calling is disabled at request construction: no tools, tool_choice, parallel_tool_calls, functions, or function_call fields; capture no registry tool execution and no MCP discovery for EXAONE route.",
+            "userModel": "edge",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G004-C002-exaone-tool-disabled.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G004-C002-exaone-tool-disabled.txt; cleanup audit .omo/ulw-loop/evidence/G004-cleanup-audit.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:48:17.126Z"
+          },
+          {
+            "id": "C003",
+            "scenario": "Browser use: open http://127.0.0.1:8081/, send a dynamic UI request, capture screenshot showing ggui rendered inside assistant bubble, not bottom panel.",
+            "userModel": "regression",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G004-C003-inline-ggui-browser.png",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G004-C003-inline-ggui-browser.png + .omo/ulw-loop/evidence/G004-C003-inline-ggui-browser.txt; cleanup audit .omo/ulw-loop/evidence/G004-cleanup-audit.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:48:17.180Z"
+          }
+        ],
+        "attempt": 1,
+        "createdAt": "2026-05-31T02:11:00.394Z",
+        "updatedAt": "2026-05-31T02:48:27.502Z",
+        "startedAt": "2026-05-31T02:44:14.768Z",
+        "completedAt": "2026-05-31T02:48:27.502Z",
+        "evidence": "C001 .omo/ulw-loop/evidence/G004-C001-main-capabilities.txt; C002 .omo/ulw-loop/evidence/G004-C002-exaone-tool-disabled.txt (revised from user correction: tool-calling disabled in request config); C003 Browser plugin screenshot .omo/ulw-loop/evidence/G004-C003-inline-ggui-browser.png and text .omo/ulw-loop/evidence/G004-C003-inline-ggui-browser.txt; tests: node --test profiled-engine/http/engine/ggui-render/mcp = 43 pass plus profiled-engine = 3 pass after rename; cleanup audit .omo/ulw-loop/evidence/G004-cleanup-audit.txt"
+      },
+      {
+        "id": "G005-self-improvement-hook-safety-and-pro",
+        "title": "Self-improvement, hook safety, and prompt/skill evolution. Make self-...",
+        "objective": "Self-improvement, hook safety, and prompt/skill evolution. Make self-improvement a first-class internal engine subsystem covering skill evolution, hook evolution, workflow/node spec evolution, and both profile system prompts. Codex app-server may only be used as isolated implementer, not runtime. Hook failures become diagnostic evidence and never crash /turn.",
+        "status": "complete",
+        "successCriteria": [
+          {
+            "id": "C001",
+            "scenario": "HTTP/tmux: stage self-improvement candidates for skill, hook, workflow/node spec, main prompt, and exaone prompt; capture versioned artifacts and rollback metadata.",
+            "userModel": "happy",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G005-C001-self-improvement-candidates.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G005-C001-self-improvement-candidates.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:52:52.989Z"
+          },
+          {
+            "id": "C002",
+            "scenario": "HTTP call: run /turn with Codex implementer unavailable and a throwing hook; capture successful /turn plus diagnostic hook evidence, no crash.",
+            "userModel": "edge",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G005-C002-hook-failure-runtime.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G005-C002-hook-failure-runtime.txt; cleanup audit .omo/ulw-loop/evidence/G005-cleanup-audit.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:52:59.602Z"
+          },
+          {
+            "id": "C003",
+            "scenario": "tmux: run existing self-improvement registry smoke publish/rollback tests and capture before/after/rollback state.",
+            "userModel": "regression",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G005-C003-registry-regression.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G005-C003-registry-regression.txt; cleanup audit .omo/ulw-loop/evidence/G005-cleanup-audit.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T02:52:59.657Z"
+          }
+        ],
+        "attempt": 1,
+        "createdAt": "2026-05-31T02:11:00.394Z",
+        "updatedAt": "2026-05-31T02:53:16.396Z",
+        "startedAt": "2026-05-31T02:49:23.090Z",
+        "completedAt": "2026-05-31T02:53:16.396Z",
+        "evidence": "C001 .omo/ulw-loop/evidence/G005-C001-self-improvement-candidates.txt; C002 .omo/ulw-loop/evidence/G005-C002-hook-failure-runtime.txt; C003 .omo/ulw-loop/evidence/G005-C003-registry-regression.txt; tests: node --test http/workflow-evolution = 26 pass; cleanup audit .omo/ulw-loop/evidence/G005-cleanup-audit.txt"
+      },
+      {
+        "id": "G006-browser-microphone-voice-and-pretext",
+        "title": "Browser microphone Voice and Pretext responsive UI. Replace upload-st...",
+        "objective": "Browser microphone Voice and Pretext responsive UI. Replace upload-style Voice with microphone getUserMedia/MediaRecorder into whisper.cpp transcription. Improve the chat-first UI using @chenglou/pretext for real text measurement/layout stability, responsive compact layout, debug inspector, and inline ggui.",
+        "status": "complete",
+        "successCriteria": [
+          {
+            "id": "C001",
+            "scenario": "Browser use: open http://127.0.0.1:8081/, use fake microphone stream through Voice button, stop recording, capture transcript populated in input without auto-send.",
+            "userModel": "happy",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G006-C001-voice-browser.png",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G006-C001-voice-browser.png + .omo/ulw-loop/evidence/G006-C001-voice-browser.txt; checks .omo/ulw-loop/evidence/G006-checks.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T03:02:42.835Z"
+          },
+          {
+            "id": "C002",
+            "scenario": "Browser use: deny getUserMedia and simulate missing Intl.Segmenter/Canvas measurement; capture Korean permission error and Pretext fallback without crash.",
+            "userModel": "edge",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G006-C002-voice-pretext-edge.png",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G006-C002-voice-pretext-edge.png + .omo/ulw-loop/evidence/G006-C002-voice-pretext-edge.txt; checks .omo/ulw-loop/evidence/G006-checks.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T03:02:42.889Z"
+          },
+          {
+            "id": "C003",
+            "scenario": "Browser use: mobile and desktop viewport screenshots after long Korean/English mixed answer; capture compact responsive layout with no overlaps and debug inspector secondary.",
+            "userModel": "regression",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G006-C003-responsive-browser.png",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G006-C003-responsive-browser.png + desktop .omo/ulw-loop/evidence/G006-C003-responsive-browser-desktop.png + .omo/ulw-loop/evidence/G006-C003-responsive-browser.txt; cleanup .omo/ulw-loop/evidence/G006-cleanup-audit.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T03:02:42.947Z"
+          }
+        ],
+        "attempt": 1,
+        "createdAt": "2026-05-31T02:11:00.394Z",
+        "updatedAt": "2026-05-31T03:02:52.410Z",
+        "startedAt": "2026-05-31T02:53:28.363Z",
+        "completedAt": "2026-05-31T03:02:52.410Z",
+        "evidence": "C001 .omo/ulw-loop/evidence/G006-C001-voice-browser.png + txt; C002 .omo/ulw-loop/evidence/G006-C002-voice-pretext-edge.png + txt; C003 .omo/ulw-loop/evidence/G006-C003-responsive-browser.png + desktop png + txt; checks .omo/ulw-loop/evidence/G006-checks.txt; cleanup .omo/ulw-loop/evidence/G006-cleanup-audit.txt"
+      },
+      {
+        "id": "G007-final-docs-real-e2e-and-quality-gate",
+        "title": "Final docs, real E2E, and quality gate. Update docs/config and run re...",
+        "objective": "Final docs, real E2E, and quality gate. Update docs/config and run real verification: gateway tests, client check, Expo web export, Browser-plugin E2E, LM Studio EXAONE route, model switching, compaction evidence, profile gating, inline ggui, microphone voice, and resource cleanup. No standalone Playwright.",
+        "status": "complete",
+        "successCriteria": [
+          {
+            "id": "C001",
+            "scenario": "tmux: run node --test services/agent-gateway/test/*.test.js services/agent-gateway/test/*.test.mjs, npm --prefix apps/client run check, and npx expo export --platform web --output-dir /tmp/oba-client-web-profiled-engine; capture transcript.",
+            "userModel": "happy",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G007-C001-verification-suite.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G007-C001-verification-suite.txt; final rerun .omo/ulw-loop/evidence/G007-final-verification.txt; ai-slop .omo/ulw-loop/evidence/G007-ai-slop-cleaner.txt; code-review .omo/ulw-loop/evidence/G007-final-code-review.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T03:15:37.591Z"
+          },
+          {
+            "id": "C002",
+            "scenario": "HTTP call + Browser use: real/fake local E2E covers profile gating, compaction debug, LM Studio EXAONE route, model switching, inline ggui, Voice, and cleanup receipts.",
+            "userModel": "edge",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G007-C002-real-e2e.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G007-C002-real-e2e.txt + .omo/ulw-loop/evidence/G007-C002-browser-e2e.png; cleanup .omo/ulw-loop/evidence/G007-cleanup-audit.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T03:07:34.443Z"
+          },
+          {
+            "id": "C003",
+            "scenario": "tmux: scan docs/config/source for stale forbidden language: Codex app-server runtime, upload picker normal UX, restaurant-only ggui, two engine implementations; capture no matches.",
+            "userModel": "regression",
+            "expectedEvidence": ".omo/ulw-loop/evidence/G007-C003-doc-source-scan.txt",
+            "capturedEvidence": ".omo/ulw-loop/evidence/G007-C003-doc-source-scan.txt",
+            "status": "pass",
+            "capturedAt": "2026-05-31T03:07:34.498Z"
+          }
+        ],
+        "attempt": 1,
+        "createdAt": "2026-05-31T02:11:00.394Z",
+        "updatedAt": "2026-05-31T03:18:18.504Z",
+        "startedAt": "2026-05-31T03:03:06.041Z",
+        "completedAt": "2026-05-31T03:18:18.504Z",
+        "evidence": "C001 .omo/ulw-loop/evidence/G007-C001-verification-suite.txt + final .omo/ulw-loop/evidence/G007-final-verification.txt; C002 .omo/ulw-loop/evidence/G007-C002-real-e2e.txt + Browser screenshot; C003 .omo/ulw-loop/evidence/G007-C003-doc-source-scan.txt; ai-slop .omo/ulw-loop/evidence/G007-ai-slop-cleaner.txt; final code review APPROVE/CLEAR .omo/ulw-loop/evidence/G007-final-code-review.txt; cleanup .omo/ulw-loop/evidence/G007-cleanup-audit.txt"
+      }
+    ],
+    "codexObjective": "Complete the durable ulw-loop plan in .omo/ulw-loop/019e799c-c85f-7a22-a868-75f6a58d1939/goals.json, including later accepted/appended stories, under the original brief constraints; use .omo/ulw-loop/019e799c-c85f-7a22-a868-75f6a58d1939/ledger.jsonl as the audit trail.",
+    "aggregateCompletion": {
+      "status": "complete",
+      "completedAt": "2026-05-31T03:18:18.504Z",
+      "evidence": "C001 .omo/ulw-loop/evidence/G007-C001-verification-suite.txt + final .omo/ulw-loop/evidence/G007-final-verification.txt; C002 .omo/ulw-loop/evidence/G007-C002-real-e2e.txt + Browser screenshot; C003 .omo/ulw-loop/evidence/G007-C003-doc-source-scan.txt; ai-slop .omo/ulw-loop/evidence/G007-ai-slop-cleaner.txt; final code review APPROVE/CLEAR .omo/ulw-loop/evidence/G007-final-code-review.txt; cleanup .omo/ulw-loop/evidence/G007-cleanup-audit.txt",
+      "codexGoal": {
+        "objective": "Complete the durable ulw-loop plan in .omo/ulw-loop/019e799c-c85f-7a22-a868-75f6a58d1939/goals.json, including later accepted/appended stories, under the original brief constraints; use .omo/ulw-loop/019e799c-c85f-7a22-a868-75f6a58d1939/ledger.jsonl as the audit trail.",
+        "status": "complete",
+        "tokensUsed": 1074311,
+        "timeUsedSeconds": 3466
+      }
+    }
+  },
+  "goal": {
+    "id": "G007-final-docs-real-e2e-and-quality-gate",
+    "title": "Final docs, real E2E, and quality gate. Update docs/config and run re...",
+    "objective": "Final docs, real E2E, and quality gate. Update docs/config and run real verification: gateway tests, client check, Expo web export, Browser-plugin E2E, LM Studio EXAONE route, model switching, compaction evidence, profile gating, inline ggui, microphone voice, and resource cleanup. No standalone Playwright.",
+    "status": "complete",
+    "successCriteria": [
+      {
+        "id": "C001",
+        "scenario": "tmux: run node --test services/agent-gateway/test/*.test.js services/agent-gateway/test/*.test.mjs, npm --prefix apps/client run check, and npx expo export --platform web --output-dir /tmp/oba-client-web-profiled-engine; capture transcript.",
+        "userModel": "happy",
+        "expectedEvidence": ".omo/ulw-loop/evidence/G007-C001-verification-suite.txt",
+        "capturedEvidence": ".omo/ulw-loop/evidence/G007-C001-verification-suite.txt; final rerun .omo/ulw-loop/evidence/G007-final-verification.txt; ai-slop .omo/ulw-loop/evidence/G007-ai-slop-cleaner.txt; code-review .omo/ulw-loop/evidence/G007-final-code-review.txt",
+        "status": "pass",
+        "capturedAt": "2026-05-31T03:15:37.591Z"
+      },
+      {
+        "id": "C002",
+        "scenario": "HTTP call + Browser use: real/fake local E2E covers profile gating, compaction debug, LM Studio EXAONE route, model switching, inline ggui, Voice, and cleanup receipts.",
+        "userModel": "edge",
+        "expectedEvidence": ".omo/ulw-loop/evidence/G007-C002-real-e2e.txt",
+        "capturedEvidence": ".omo/ulw-loop/evidence/G007-C002-real-e2e.txt + .omo/ulw-loop/evidence/G007-C002-browser-e2e.png; cleanup .omo/ulw-loop/evidence/G007-cleanup-audit.txt",
+        "status": "pass",
+        "capturedAt": "2026-05-31T03:07:34.443Z"
+      },
+      {
+        "id": "C003",
+        "scenario": "tmux: scan docs/config/source for stale forbidden language: Codex app-server runtime, upload picker normal UX, restaurant-only ggui, two engine implementations; capture no matches.",
+        "userModel": "regression",
+        "expectedEvidence": ".omo/ulw-loop/evidence/G007-C003-doc-source-scan.txt",
+        "capturedEvidence": ".omo/ulw-loop/evidence/G007-C003-doc-source-scan.txt",
+        "status": "pass",
+        "capturedAt": "2026-05-31T03:07:34.498Z"
+      }
+    ],
+    "attempt": 1,
+    "createdAt": "2026-05-31T02:11:00.394Z",
+    "updatedAt": "2026-05-31T03:18:18.504Z",
+    "startedAt": "2026-05-31T03:03:06.041Z",
+    "completedAt": "2026-05-31T03:18:18.504Z",
+    "evidence": "C001 .omo/ulw-loop/evidence/G007-C001-verification-suite.txt + final .omo/ulw-loop/evidence/G007-final-verification.txt; C002 .omo/ulw-loop/evidence/G007-C002-real-e2e.txt + Browser screenshot; C003 .omo/ulw-loop/evidence/G007-C003-doc-source-scan.txt; ai-slop .omo/ulw-loop/evidence/G007-ai-slop-cleaner.txt; final code review APPROVE/CLEAR .omo/ulw-loop/evidence/G007-final-code-review.txt; cleanup .omo/ulw-loop/evidence/G007-cleanup-audit.txt"
+  },
+  "ledgerEntry": {
+    "at": "2026-05-31T03:18:18.504Z",
+    "kind": "aggregate_completed",
+    "goalId": "G007-final-docs-real-e2e-and-quality-gate",
+    "status": "complete",
+    "evidence": "C001 .omo/ulw-loop/evidence/G007-C001-verification-suite.txt + final .omo/ulw-loop/evidence/G007-final-verification.txt; C002 .omo/ulw-loop/evidence/G007-C002-real-e2e.txt + Browser screenshot; C003 .omo/ulw-loop/evidence/G007-C003-doc-source-scan.txt; ai-slop .omo/ulw-loop/evidence/G007-ai-slop-cleaner.txt; final code review APPROVE/CLEAR .omo/ulw-loop/evidence/G007-final-code-review.txt; cleanup .omo/ulw-loop/evidence/G007-cleanup-audit.txt",
+    "codexGoal": {
+      "objective": "Complete the durable ulw-loop plan in .omo/ulw-loop/019e799c-c85f-7a22-a868-75f6a58d1939/goals.json, including later accepted/appended stories, under the original brief constraints; use .omo/ulw-loop/019e799c-c85f-7a22-a868-75f6a58d1939/ledger.jsonl as the audit trail.",
+      "status": "complete",
+      "tokensUsed": 1074311,
+      "timeUsedSeconds": 3466
+    },
+    "qualityGate": {
+      "aiSlopCleaner": {
+        "status": "passed",
+        "evidence": ".omo/ulw-loop/evidence/G007-ai-slop-cleaner.txt"
+      },
+      "verification": {
+        "status": "passed",
+        "commands": [
+          "git diff --check",
+          "node --test services/agent-gateway/test/*.test.js services/agent-gateway/test/*.test.mjs",
+          "npm --prefix apps/client run check",
+          "cd apps/client && npx expo export --platform web --output-dir /tmp/oba-client-web-profiled-engine-final"
+        ],
+        "evidence": ".omo/ulw-loop/evidence/G007-final-verification.txt"
+      },
+      "codeReview": {
+        "recommendation": "APPROVE",
+        "architectStatus": "CLEAR",
+        "evidence": ".omo/ulw-loop/evidence/G007-final-code-review.txt"
+      },
+      "criteriaCoverage": {
+        "totalCriteria": 21,
+        "passCount": 21,
+        "adversarialClassesCovered": [
+          "invalid profile config",
+          "tool calling disabled at request construction",
+          "context compaction threshold pressure",
+          "resource cancellation cleanup",
+          "hook failure diagnostic no-crash",
+          "microphone permission denial",
+          "Pretext fallback",
+          "responsive no-overflow UI",
+          "stale docs/source scan"
+        ]
+      }
+    }
+  },
+  "aggregateCompletion": {
+    "status": "complete",
+    "completedAt": "2026-05-31T03:18:18.504Z",
+    "evidence": "C001 .omo/ulw-loop/evidence/G007-C001-verification-suite.txt + final .omo/ulw-loop/evidence/G007-final-verification.txt; C002 .omo/ulw-loop/evidence/G007-C002-real-e2e.txt + Browser screenshot; C003 .omo/ulw-loop/evidence/G007-C003-doc-source-scan.txt; ai-slop .omo/ulw-loop/evidence/G007-ai-slop-cleaner.txt; final code review APPROVE/CLEAR .omo/ulw-loop/evidence/G007-final-code-review.txt; cleanup .omo/ulw-loop/evidence/G007-cleanup-audit.txt",
+    "codexGoal": {
+      "objective": "Complete the durable ulw-loop plan in .omo/ulw-loop/019e799c-c85f-7a22-a868-75f6a58d1939/goals.json, including later accepted/appended stories, under the original brief constraints; use .omo/ulw-loop/019e799c-c85f-7a22-a868-75f6a58d1939/ledger.jsonl as the audit trail.",
+      "status": "complete",
+      "tokensUsed": 1074311,
+      "timeUsedSeconds": 3466
+    }
+  },
+  "summary": {
+    "total": 7,
+    "pending": 0,
+    "in_progress": 0,
+    "complete": 7,
+    "failed": 0,
+    "blocked": 0,
+    "review_blocked": 0,
+    "needs_user_decision": 0,
+    "superseded": 0,
+    "criteria": {
+      "total": 21,
+      "pass": 21,
+      "pending": 0,
+      "fail": 0,
+      "blocked": 0
+    }
+  }
+}

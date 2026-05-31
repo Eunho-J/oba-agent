@@ -1,0 +1,12 @@
+# G004 C003 browser gateway setup
+tmux_session=ulw-qa-G004-C003-gateway
+script=/var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g004-c003-gateway.QD3rrvoncJ.mjs
+{
+  "ok": true
+}
+# Browser plugin verification result
+screenshot=.omo/ulw-loop/evidence/G004-C003-inline-ggui-browser.png
+surfaceCount=1
+hasInlineTitle=true
+renderUIButtonCount=0
+parentText=EXAONE answer bubble contains Browser inline dynamic UI table

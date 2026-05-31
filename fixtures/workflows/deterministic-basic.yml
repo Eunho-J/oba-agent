@@ -1,0 +1,83 @@
+id: deterministic-basic-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+inputs:
+  query:
+    type: string
+nodes:
+  - id: input-query
+    type: input
+    config:
+      name: query
+    outputs:
+      value:
+        type: string
+  - id: normalize
+    type: transform.normalizeText
+    config:
+      normalizer:
+        trim: true
+        collapseWhitespace: true
+        lowercase: true
+    inputs:
+      text:
+        type: string
+        required: true
+    outputs:
+      text:
+        type: string
+  - id: regex
+    type: parse.regex
+    config:
+      pattern: "(hello|workflow)"
+      flags: g
+    inputs:
+      text:
+        type: string
+        required: true
+    outputs:
+      matches:
+        type: array
+  - id: respond
+    type: output.respond
+    config:
+      template: "{{text}}::{{matches}}"
+    inputs:
+      text:
+        type: string
+        required: true
+      matches:
+        type: array
+        required: true
+    outputs:
+      response:
+        type: string
+edges:
+  - from:
+      node: input-query
+      outputPort: value
+    to:
+      node: normalize
+      inputPort: text
+  - from:
+      node: normalize
+      outputPort: text
+    to:
+      node: regex
+      inputPort: text
+  - from:
+      node: normalize
+      outputPort: text
+    to:
+      node: respond
+      inputPort: text
+  - from:
+      node: regex
+      outputPort: matches
+    to:
+      node: respond
+      inputPort: matches
+outputs:
+  response:
+    node: respond
+    outputPort: response

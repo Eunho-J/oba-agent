@@ -1,0 +1,10 @@
+# G003 C003 emotional model switch HTTP evidence
+{
+  "status": 200,
+  "answer": "fake final via test-model",
+  "finalAnswerModel": "test-model",
+  "lmStudioRequestModel": "test-model",
+  "mainProviderName": "fake-main",
+  "mainRequestContent": "model switch check"
+}
+cleanup: removed /var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g003-c003.L19EttqR69.mjs; gateway/fake LM Studio closed; ports 8796/8797 released

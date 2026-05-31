@@ -1,0 +1,41 @@
+{
+  "id": "candidate_legacy_miso",
+  "versionName": "legacy-miso-workflow-v1",
+  "reason": "Legacy fixture proving obsolete workflow candidate fields are rejected.",
+  "changed": [
+    "local_workflow_registry",
+    "miso_workflow_memory"
+  ],
+  "contracts": {
+    "workflowCandidate": {
+      "id": "workflow_candidate_legacy_miso",
+      "versionName": "legacy-miso-workflow-v1",
+      "reason": "Uses the removed MISO workflow field.",
+      "changed": [
+        "local_workflow_registry",
+        "miso_workflow_memory"
+      ],
+      "patches": {
+        "localWorkflowRegistry": {
+          "operations": [
+            {
+              "op": "add",
+              "path": "/nodes/legacy",
+              "value": {
+                "title": "legacy MISO workflow"
+              }
+            }
+          ]
+        },
+        "misoWorkflowYaml": "id: legacy-flow\n"
+      },
+      "smokeTests": [
+        {
+          "name": "legacy MISO candidate is rejected",
+          "input": "회의록 요약해줘",
+          "expected": "REGISTRY_VALIDATION_FAILED"
+        }
+      ]
+    }
+  }
+}

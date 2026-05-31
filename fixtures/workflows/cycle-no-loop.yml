@@ -1,0 +1,43 @@
+id: invalid-cycle-no-loop-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+nodes:
+  - id: first
+    type: transform.normalizeText
+    config:
+      normalizer: trim
+    inputs:
+      text:
+        type: string
+        required: true
+    outputs:
+      text:
+        type: string
+  - id: second
+    type: transform.template
+    config:
+      template: "{{text}}"
+    inputs:
+      text:
+        type: string
+        required: true
+    outputs:
+      text:
+        type: string
+edges:
+  - from:
+      node: first
+      outputPort: text
+    to:
+      node: second
+      inputPort: text
+  - from:
+      node: second
+      outputPort: text
+    to:
+      node: first
+      inputPort: text
+outputs:
+  text:
+    node: second
+    outputPort: text

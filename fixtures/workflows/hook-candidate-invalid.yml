@@ -1,0 +1,26 @@
+id: hook-candidate-invalid-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+nodes:
+  - id: hook
+    type: candidate.writeHookProposal
+    config:
+      target: codex/hooks/unsafe
+      proposal:
+        event: PostToolUse
+        matcher: Write
+        command: unsafe-hook
+        timeoutMs: 1000
+        failurePolicy: throw
+        diagnosticShape:
+          type: hook.error
+        tests:
+          - errors should not kill the agent
+    outputs:
+      candidate:
+        type: object
+edges: []
+outputs:
+  candidate:
+    node: hook
+    outputPort: candidate

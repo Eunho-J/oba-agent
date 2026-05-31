@@ -1,0 +1,84 @@
+id: meeting-recall-v1
+version: "1.0.0"
+description: Recall core meeting context and summarize it.
+catalogVersion: local-workflow-catalog-v1
+inputs:
+  query:
+    type: string
+nodes:
+  - id: user-query
+    type: input
+    label: User query
+    config:
+      name: query
+    outputs:
+      value:
+        type: string
+  - id: seed-core
+    type: recall.seedCore
+    label: Seed core memory
+    config:
+      budget: 1200
+      includeCore: true
+      policyRef: core-default
+    inputs:
+      query:
+        type: string
+        required: true
+    outputs:
+      memory:
+        type: array
+  - id: rank-memory
+    type: flow.rank
+    label: Rank memory
+    config:
+      scorePath: importance
+      limit: 5
+    inputs:
+      items:
+        type: array
+        required: true
+    outputs:
+      ranked:
+        type: array
+  - id: respond
+    type: output.respond
+    label: Meeting response
+    config:
+      template: "{{ranked}}"
+    inputs:
+      body:
+        type: array
+        required: true
+    outputs:
+      response:
+        type: string
+edges:
+  - from:
+      node: user-query
+      outputPort: value
+    to:
+      node: seed-core
+      inputPort: query
+  - from:
+      node: seed-core
+      outputPort: memory
+    to:
+      node: rank-memory
+      inputPort: items
+  - from:
+      node: rank-memory
+      outputPort: ranked
+    to:
+      node: respond
+      inputPort: body
+outputs:
+  response:
+    node: respond
+    outputPort: response
+invariants:
+  - core_memory_is_seeded
+smokeTests:
+  - name: meeting recall returns ranked memory
+    input: 회의록 요약해줘
+    expected: ranked_memory_response

@@ -1,0 +1,10 @@
+{
+  "mode": "llm.prompt",
+  "model": "unknown/model",
+  "messages": [
+    {
+      "role": "user",
+      "content": "이 요청은 허용되지 않은 모델로 실행되면 안 돼."
+    }
+  ]
+}

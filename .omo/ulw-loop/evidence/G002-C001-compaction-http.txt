@@ -1,0 +1,69 @@
+# G002 C001 compaction HTTP evidence
+memory_root=/var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c001-memory.WAS0jaafNV
+env: OBA_CONTEXT_WINDOW_TOKENS=1000 OBA_CONTEXT_COMPACTION_THRESHOLD=0.9
+{
+  "status": 200,
+  "ok": true,
+  "answer": "exaone final",
+  "context": {
+    "contextWindowTokens": 1000,
+    "compactionThreshold": 0.9,
+    "compactionThresholdTokens": 900,
+    "estimatedTokens": 1154,
+    "memory": {
+      "enabled": true,
+      "conversationId": "g002-c001",
+      "loadedRevision": 0,
+      "persistedRevision": 2,
+      "storePath": "/var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c001-memory.WAS0jaafNV/g002-c001-e10c3bdc65bfdcb9",
+      "preTurnCompaction": {
+        "triggered": true,
+        "estimatedTokens": 913,
+        "thresholdTokens": 900,
+        "summary": "- current user intent: 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 "
+      },
+      "midTurnCompactions": []
+    }
+  }
+}
+{
+  "status": 200,
+  "ok": true,
+  "answer": "exaone final",
+  "context": {
+    "contextWindowTokens": 1000,
+    "compactionThreshold": 0.9,
+    "compactionThresholdTokens": 900,
+    "estimatedTokens": 2140,
+    "memory": {
+      "enabled": true,
+      "conversationId": "g002-c001",
+      "loadedRevision": 2,
+      "persistedRevision": 4,
+      "storePath": "/var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c001-memory.WAS0jaafNV/g002-c001-e10c3bdc65bfdcb9",
+      "preTurnCompaction": {
+        "triggered": true,
+        "estimatedTokens": 1908,
+        "thresholdTokens": 900,
+        "summary": "- current user intent: 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴\n- current user intent: 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 "
+      },
+      "midTurnCompactions": []
+    }
+  }
+}
+{
+  "providerCalls": 2,
+  "replayedMessageCount": 5
+}
+# memory files
+/var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c001-memory.WAS0jaafNV/g002-c001-e10c3bdc65bfdcb9/journal.jsonl
+/var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c001-memory.WAS0jaafNV/g002-c001-e10c3bdc65bfdcb9/manifest.json
+# manifest excerpts
+/var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c001-memory.WAS0jaafNV/g002-c001-e10c3bdc65bfdcb9/manifest.json
+{
+  "revision": 4,
+  "summary": "- current user intent: 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트 긴 컨텍스트",
+  "turns": 2,
+  "compactedAt": "2026-05-31T02:38:23.025Z"
+}
+cleanup: removed /var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c001-memory.WAS0jaafNV and /var/folders/xm/rns726zd7tsf5bm41c61yrgr0000gn/T/oba-g002-c001.QY8o6rFzNk.mjs; server closed in finally; no persistent process spawned

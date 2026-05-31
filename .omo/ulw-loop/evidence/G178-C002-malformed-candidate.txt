@@ -1,0 +1,24 @@
+REGISTRY_VALIDATION_FAILED
+workflowCandidate $/versionName is required
+__EXIT_CODE__:1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

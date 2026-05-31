@@ -1,0 +1,86 @@
+id: recall-gateway-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+inputs:
+  query:
+    type: string
+  vaultRoot:
+    type: string
+nodes:
+  - id: input-query
+    type: input
+    config:
+      name: query
+    outputs:
+      value:
+        type: string
+  - id: seed-core
+    type: recall.seedCore
+    config:
+      budget: 800
+    outputs:
+      memories:
+        type: array
+  - id: explain
+    type: recall.explain
+    config:
+      policyRef: core-default
+    inputs:
+      memories:
+        type: array
+        required: true
+    outputs:
+      explanation:
+        type: object
+  - id: redact
+    type: safety.redactSecrets
+    inputs:
+      text:
+        type: string
+        required: true
+    outputs:
+      text:
+        type: string
+  - id: respond
+    type: output.respond
+    config:
+      template: "{{explanation}}::{{text}}"
+    inputs:
+      explanation:
+        type: object
+        required: true
+      text:
+        type: string
+        required: true
+    outputs:
+      response:
+        type: string
+edges:
+  - from:
+      node: input-query
+      outputPort: value
+    to:
+      node: redact
+      inputPort: text
+  - from:
+      node: seed-core
+      outputPort: memories
+    to:
+      node: explain
+      inputPort: memories
+  - from:
+      node: explain
+      outputPort: explanation
+    to:
+      node: respond
+      inputPort: explanation
+  - from:
+      node: redact
+      outputPort: text
+    to:
+      node: respond
+      inputPort: text
+outputs:
+  response:
+    node: respond
+    outputPort: response

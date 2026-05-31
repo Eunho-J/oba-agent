@@ -1,0 +1,178 @@
+{
+  "id": "candidate_minimal_active",
+  "versionName": "purchase-confirmation-ui-v1",
+  "reason": "Prefer comparison and explicit confirmation for purchase requests.",
+  "createdAt": "2026-05-31T00:00:00.000Z",
+  "changed": [
+    "local_prompt",
+    "exaone_expression_prompt",
+    "local_workflow_registry",
+    "local_workflow_memory",
+    "ggui_render_step"
+  ],
+  "contracts": {
+    "sttTranscript": {
+      "id": "stt_001",
+      "text": "노이즈캔슬링 이어폰 사고 싶어",
+      "language": "ko",
+      "confidence": 0.94,
+      "segments": [
+        {
+          "startMs": 0,
+          "endMs": 1940,
+          "text": "노이즈캔슬링 이어폰 사고 싶어",
+          "confidence": 0.94
+        }
+      ],
+      "provider": "whisper.cpp",
+      "model": "small"
+    },
+    "exaoneNormalizedInput": {
+      "id": "input_001",
+      "transcriptId": "stt_001",
+      "normalizedText": "노이즈캔슬링 이어폰 구매 후보를 비교하고 싶다.",
+      "language": "ko",
+      "emotionalHints": {
+        "urgency": "low",
+        "affect": "curious",
+        "confidence": 0.82
+      },
+      "sensitiveSpans": []
+    },
+    "exaoneNormalizedOutput": {
+      "id": "output_001",
+      "rationalResultId": "result_001",
+      "utterance": "먼저 후보를 비교표로 정리하고, 구매 확정 전에는 한 번 더 확인할게요.",
+      "language": "ko",
+      "tone": "calm",
+      "uiCopy": [
+        {
+          "surface": "comparison_table",
+          "text": "구매 후보 비교"
+        }
+      ],
+      "safetyNotes": [
+        "No purchase is confirmed without user approval."
+      ]
+    },
+    "recallPolicy": {
+      "id": "recall_purchase_compare_v1",
+      "version": 1,
+      "rules": [
+        {
+          "intent": "purchase_request",
+          "priority": 10,
+          "conditions": [
+            "contains_purchase_language"
+          ],
+          "recall": [
+            "candidate_comparison",
+            "explicit_confirmation"
+          ],
+          "requiredConfirmation": true
+        }
+      ],
+      "invariants": [
+        "external_purchase_requires_confirmation",
+        "candidate_validation_failure_keeps_active"
+      ]
+    },
+    "expressionMemory": {
+      "id": "expression_memory_001",
+      "userPreferences": {
+        "address": "casual_polite",
+        "explanationLength": "brief",
+        "empathyLevel": "medium"
+      },
+      "avoidedPhrases": [
+        "바로 구매할게요"
+      ],
+      "updatedAt": "2026-05-31T00:00:00.000Z"
+    },
+    "reasoningMemory": {
+      "id": "reasoning_memory_001",
+      "facts": [],
+      "failurePatterns": [
+        {
+          "name": "premature_purchase_recommendation",
+          "mitigation": "show comparison before recommendation"
+        }
+      ],
+      "toolPreferences": [
+        {
+          "tool": "ggui.render.comparison_table",
+          "when": "purchase_request"
+        }
+      ],
+      "updatedAt": "2026-05-31T00:00:00.000Z"
+    },
+    "workflowCandidate": {
+      "id": "workflow_candidate_001",
+      "versionName": "purchase-confirmation-ui-v1",
+      "reason": "Insert a comparison table and confirmation gate before purchase execution.",
+      "changed": [
+        "local_workflow_registry",
+        "local_workflow_memory",
+        "ggui_render_step"
+      ],
+      "patches": {
+        "localWorkflowRegistry": {
+          "operations": [
+            {
+              "op": "add",
+              "path": "/nodes/comparison-table",
+              "value": {
+                "title": "구매 후보 비교표",
+                "requiredConfirmation": true
+              }
+            }
+          ]
+        },
+        "localWorkflowYaml": "id: purchase-flow\nrequiredConfirmation: true\n"
+      },
+      "smokeTests": [
+        {
+          "name": "purchase requests show comparison before action",
+          "input": "노이즈캔슬링 이어폰 사고 싶어",
+          "expected": "comparison_table_without_purchase"
+        }
+      ]
+    },
+    "publishRecord": {
+      "id": "publish_001",
+      "candidateId": "candidate_minimal_active",
+      "versionName": "purchase-confirmation-ui-v1",
+      "actor": "agent",
+      "publishedAt": "2026-05-31T00:00:00.000Z",
+      "tests": [
+        "yaml_parse",
+        "purchase_smoke_case"
+      ],
+      "changed": [
+        "local_prompt",
+        "exaone_expression_prompt",
+        "local_workflow_registry",
+        "local_workflow_memory",
+        "ggui_render_step"
+      ],
+      "rollback": "previous_published_version_id"
+    },
+    "rollbackRecord": {
+      "id": "rollback_001",
+      "fromVersionId": "publish_001",
+      "toVersionId": "previous_published_version_id",
+      "actor": "agent",
+      "reason": "Smoke test regression after publish.",
+      "rolledBackAt": "2026-05-31T00:00:00.000Z"
+    },
+    "gguiWorkbenchEvent": {
+      "type": "workflow.node.update",
+      "workflowId": "purchase-flow",
+      "nodeId": "comparison-table",
+      "patch": {
+        "title": "구매 후보 비교표",
+        "requiredConfirmation": true
+      }
+    }
+  }
+}

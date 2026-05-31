@@ -1,0 +1,131 @@
+id: evolution-candidates-v1
+version: "1.0.0"
+catalogVersion: local-workflow-catalog-v1
+nodes:
+  - id: node-proposal
+    type: candidate.writeNodeProposal
+    config:
+      target: local-workflow-catalog-v1
+      rationale: add deterministic parse helper as inert proposal
+      proposal:
+        nodeType: parse.dateRange
+        catalogEntry:
+          inputs:
+            text: string
+          outputs:
+            range: object
+        tests:
+          - rejects invalid dates
+      rollback:
+        removeCandidate: true
+    outputs:
+      candidate:
+        type: object
+  - id: system-prompt
+    type: candidate.writeSystemPromptProposal
+    config:
+      target: obaMainAgent
+      rationale: clarify memory recall behavior
+      proposal:
+        prompt: Always seed core memory before transient notes.
+        safetyInvariants:
+          - never expose internal self-improvement candidates
+        regressionTests:
+          - restaurant photos still render through ggui intent
+      rollback:
+        restorePromptVersion: obaMainAgent@previous
+    outputs:
+      candidate:
+        type: object
+  - id: exaone-system-prompt
+    type: candidate.writeSystemPromptProposal
+    config:
+      target: exaoneExpressionAgent
+      rationale: keep EXAONE final layer faithful to main-agent results
+      proposal:
+        prompt: Reflect the main agent result without inventing new actions.
+        safetyInvariants:
+          - final expression must not claim unexecuted tool actions
+        regressionTests:
+          - file-read sentinel remains visible in final answer
+      rollback:
+        restorePromptVersion: exaoneExpressionAgent@previous
+    outputs:
+      candidate:
+        type: object
+  - id: skill
+    type: candidate.writeSkillProposal
+    config:
+      target: codex/skills/oba-memory
+      rationale: codify memory node implementation rules
+      proposal:
+        skillMd: "# OBA Memory\nUse YAML workflow contracts."
+        metadata:
+          name: oba-memory
+        tests:
+          - skill has SKILL.md
+      rollback:
+        removeSkillCandidate: true
+    outputs:
+      candidate:
+        type: object
+  - id: hook
+    type: candidate.writeHookProposal
+    config:
+      target: codex/hooks/oba-diagnostic
+      rationale: make hook failures repairable
+      proposal:
+        event: PostToolUse
+        matcher: Write|Edit|MultiEdit
+        command: oba-hook-wrapper
+        timeoutMs: 1000
+        failurePolicy: diagnostic
+        diagnosticShape:
+          type: hook.error
+          fields:
+            - message
+            - stderr
+        tests:
+          - malformed output becomes diagnostic
+      rollback:
+        removeHookCandidate: true
+    outputs:
+      candidate:
+        type: object
+  - id: delegation
+    type: candidate.writeCodexDelegation
+    config:
+      target: codex
+      rationale: delegate self-improvement without code-level bias
+      proposal:
+        intent: improve recall summary quality
+        constraints:
+          - do not include file paths
+          - do not include code snippets
+        acceptanceCriteria:
+          - recall summaries stay under budget
+      rollback:
+        closeDelegationCandidate: true
+    outputs:
+      candidate:
+        type: object
+edges: []
+outputs:
+  nodeProposal:
+    node: node-proposal
+    outputPort: candidate
+  systemPromptProposal:
+    node: system-prompt
+    outputPort: candidate
+  exaoneSystemPromptProposal:
+    node: exaone-system-prompt
+    outputPort: candidate
+  skillProposal:
+    node: skill
+    outputPort: candidate
+  hookProposal:
+    node: hook
+    outputPort: candidate
+  codexDelegation:
+    node: delegation
+    outputPort: candidate

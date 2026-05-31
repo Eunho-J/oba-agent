@@ -1,0 +1,24 @@
+✔ contract schemas expose and validate every registry contract (3.541334ms)
+✔ malformed registry candidates reject with REGISTRY_VALIDATION_FAILED (1.504666
+ms)
+✔ file registry writes candidates, activates active.json, and appends the journa
+l (31.127708ms)
+✔ concurrent activation attempts return one success and one REGISTRY_LOCKED erro
+r (28.625333ms)
+✔ successful activation leaves no temporary atomic-write files behind (28.503667
+ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 161.261917
+__EXIT_CODE__:0
+
+
+
+
+
+

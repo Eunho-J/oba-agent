@@ -1,0 +1,11 @@
+{
+  "mode": "llm.classify",
+  "model": "exaone-4.0-1.2b",
+  "input": "회의 일정을 다음 주로 미루자고 제안하는 메시지야.",
+  "labels": [
+    "schedule_change",
+    "status_update",
+    "other"
+  ],
+  "instructions": "가장 적합한 라벨 한 개만 반환해."
+}
