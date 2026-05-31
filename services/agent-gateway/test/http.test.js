@@ -162,7 +162,9 @@ test("POST /turn returns EXAONE final answer with main-agent metadata", async ()
     assert.match(response.body.answer, /^exaone final:/);
     assert.match(response.body.answer, /plain final/);
     assert.equal(response.body.metadata.mainAgentAnswer, "plain final");
-    assert.equal(response.body.metadata.mainAgentInput, "hello (translated)");
+    assert.equal(response.body.metadata.mainAgentInput, "hello");
+    assert.equal(response.body.metadata.inputTranslationFallback, true);
+    assert.equal(response.body.metadata.inputTranslationFallbackReason, "SIMPLE_GREETING_OVER_EXPANDED");
     assert.equal(response.body.metadata.originalUserMessage, "hello");
     assert.equal(response.body.metadata.finalAnswerProvider, "lmstudio-exaone");
     assert.equal(response.body.metadata.finalAnswerModel, "exaone-4.0-1.2b");
@@ -173,13 +175,14 @@ test("POST /turn returns EXAONE final answer with main-agent metadata", async ()
     assert.equal(response.body.result, undefined);
     assert.equal(providerCalls.length, 1);
     assert.equal(lmStudioCalls.length, 2);
-    assert.equal(providerCalls[0].messages[1].content, "hello (translated)");
+    assert.equal(providerCalls[0].messages[1].content, "hello");
     const inputTranslationCall = findFeatureCall(lmStudioCalls, "exaone.input_translation");
     const finalAnswerCall = findFeatureCall(lmStudioCalls, "exaone.final_answer");
     assert.ok(inputTranslationCall);
     assert.ok(finalAnswerCall);
     assert.match(inputTranslationCall.messages.at(-1).content, /\[user\]\s*hello\s*\[\/user\]/);
-    assert.match(finalAnswerCall.messages.at(-1).content, /\[user\]\s*hello\s*\[\/user\]/);
+    assert.doesNotMatch(inputTranslationCall.messages.at(-1).content, /\[agent\]/);
+    assert.doesNotMatch(finalAnswerCall.messages.at(-1).content, /\[user\]\s*hello\s*\[\/user\]/);
     assert.match(finalAnswerCall.messages.at(-1).content, /\[agent\]\s*plain final\s*\[\/agent\]/);
   });
 });
@@ -643,6 +646,10 @@ test("POST /turn debug metadata includes main-agent + EXAONE IO for successful r
     assert.equal(debug.mainAgent.toolCalls[0].result.ok, true);
     assert.equal(debug.mainAgent.toolCalls[0].result.result.path, "tmp/e2e-readable-note.txt");
     assert.equal(typeof debug.mainAgent.providerCalls[0].request.messages[0].content, "string");
+    assert.equal(Array.isArray(debug.mainAgent.input.messages), true);
+    assert.equal(debug.mainAgent.input.messages.length > 0, true);
+    assert.equal(response.body.metadata.mainAgentInput, "read file now");
+    assert.equal(debug.mainAgent.mainAgentInput, "read file now");
     assert.match(debug.exaoneFinal.input.messages.at(-1).content, /MAIN_SENTINEL/);
     assert.equal(debug.exaoneFinal.output, "EXAONE polished final response.");
     assert.equal(debug.exaoneFinal.model, "exaone-4.0-1.2b");

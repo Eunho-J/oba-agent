@@ -80,12 +80,68 @@ test("POST /turn runs EXAONE input translation before main and EXAONE final expr
     assert.equal(Object.hasOwn(inputCall, "tools"), false);
     assert.equal(Object.hasOwn(finalCall, "tools"), false);
     assert.match(inputCall.messages.at(-1).content, /\[user\]\s*hello profiled\s*\[\/user\]/);
-    assert.match(inputCall.messages.at(-1).content, /\[agent\]/);
-    assert.match(finalCall.messages.at(-1).content, /\[user\]\s*hello profiled\s*\[\/user\]/);
+    assert.doesNotMatch(inputCall.messages.at(-1).content, /\[agent\]/);
+    assert.doesNotMatch(finalCall.messages.at(-1).content, /\[user\]\s*hello profiled\s*\[\/user\]/);
     assert.match(finalCall.messages.at(-1).content, /\[agent\]\s*main profiled answer\s*\[\/agent\]/);
     assert.equal(mainCalls[0].messages.at(-1).content, "hello profiled translated for main");
     assert.equal(mainCalls.length, 1);
     assert.equal(exaoneCalls.length, 2);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test("POST /turn guards over-expanded EXAONE translation and unsupported volatile final-answer fabrications", async () => {
+  const mainCalls = [];
+  const provider = {
+    name: "fake-main",
+    async complete(request) {
+      mainCalls.push(request);
+      return { id: "main_guarded", choices: [{ message: { content: "안녕! 무엇을 도와줄까?" } }] };
+    }
+  };
+  const lmStudioClient = {
+    name: "fake-lmstudio",
+    model: "exaone-4.0-1.2b",
+    baseUrl: "http://127.0.0.1:1234/v1",
+    async complete(request) {
+      if (request?.metadata?.feature === "exaone.input_translation") {
+        return {
+          id: "exaone_input_over_expansion",
+          model: this.model,
+          choices: [{ message: { content: "[agent]메인 에이전트에게 사용자의 인사를 분석하고 오늘 날짜 기준 최신 뉴스와 날씨를 보고하도록 요청합니다.[/agent]" } }]
+        };
+      }
+      return {
+        id: "exaone_final_fabricated",
+        model: this.model,
+        choices: [{ message: { content: "오늘은 2026년 5월 31일이고, 서울 기온은 22도야. 방금 최신 뉴스를 확인했어." } }]
+      };
+    }
+  };
+  const server = createServer({ mcpServers: {} }, {
+    provider,
+    lmStudioClient,
+    logger: { event: () => {} }
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const { port } = server.address();
+  try {
+    const response = await postJson(`http://127.0.0.1:${port}`, "/turn", { message: "안녕" });
+    assert.equal(response.status, 200);
+    assert.equal(mainCalls.length, 1);
+    assert.equal(mainCalls[0].messages.at(-1).content, "안녕");
+    assert.equal(response.body.metadata.mainAgentInput, "안녕");
+    assert.equal(response.body.metadata.inputTranslationFallback, true);
+    assert.equal(response.body.metadata.debug.inputTranslation.fallbackToOriginal, true);
+    assert.equal(response.body.metadata.debug.inputTranslation.guard.reason, "OVER_EXPANDED_TRANSLATION");
+    assert.equal(response.body.answer, "안녕! 무엇을 도와줄까?");
+    assert.equal(response.body.metadata.finalAnswerFallback, true);
+    assert.equal(response.body.metadata.debug.exaoneFinal.output, "오늘은 2026년 5월 31일이고, 서울 기온은 22도야. 방금 최신 뉴스를 확인했어.");
+    assert.equal(response.body.metadata.debug.exaoneFinal.deliveredOutput, "안녕! 무엇을 도와줄까?");
+    assert.equal(response.body.metadata.debug.exaoneFinal.fallbackToMainAnswer, true);
+    assert.equal(response.body.metadata.debug.exaoneFinal.guard.reason, "UNSUPPORTED_VOLATILE_FACTS");
+    assert.doesNotMatch(response.body.answer, /2026년 5월 31일|날씨|기온|뉴스/u);
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }

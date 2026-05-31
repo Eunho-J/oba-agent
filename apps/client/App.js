@@ -428,6 +428,8 @@ function DebugPanel({ message }) {
   const exaoneUserOutput = inputTranslation?.rawOutput || inputTranslation?.output || metadata?.inputTranslationAnswer || "";
   const exaoneFinalInput = exaoneFinal?.input?.messages || [];
   const exaoneFinalOutput = exaoneFinal?.output || message?.text || "";
+  const exaoneFinalDeliveredOutput = exaoneFinal?.deliveredOutput || metadata?.answer || message?.text || "";
+  const exaoneFinalGuard = exaoneFinal?.guard?.reason || (exaoneFinal?.fallbackToMainAnswer ? "fallback_to_main_answer" : "");
 
   return (
     <View style={styles.debugPanel}>
@@ -442,6 +444,10 @@ function DebugPanel({ message }) {
       <DebugBlock label="Tool Calls" value={compactJson(mainToolCalls)} />
       <DebugBlock label="EXAONE Final Input" value={compactJson(exaoneFinalInput)} />
       <DebugBlock label="EXAONE Final Output" value={stringifyValue(exaoneFinalOutput)} />
+      {exaoneFinalDeliveredOutput && exaoneFinalDeliveredOutput !== exaoneFinalOutput ? (
+        <DebugBlock label="Delivered Output" value={stringifyValue(exaoneFinalDeliveredOutput)} />
+      ) : null}
+      {exaoneFinalGuard ? <Text style={styles.debugLine}>EXAONE Final Guard: {exaoneFinalGuard}</Text> : null}
     </View>
   );
 }
