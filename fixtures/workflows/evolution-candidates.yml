@@ -31,7 +31,7 @@ nodes:
         safetyInvariants:
           - never expose internal self-improvement candidates
         regressionTests:
-          - restaurant photos still render through ggui intent
+          - reference image galleries still render through generic ggui intent
       rollback:
         restorePromptVersion: obaMainAgent@previous
     outputs:

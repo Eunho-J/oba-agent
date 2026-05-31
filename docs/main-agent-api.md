@@ -70,6 +70,7 @@ v1의 유일한 public client-facing endpoint다. 기존 intent router/fallback 
 ## Provider
 
 v1 provider는 Codex OAuth 테스트베드인 외부 로컬 `codex-as-api` HTTP 서버다.
+TODO: future OpenAI API-compatible provider support should remain a drop-in swap at the provider boundary, without changing agent runtime semantics.
 
 - OBA는 OAuth를 직접 구현하거나 token을 읽지 않는다.
 - `codex-as-api`는 별도 프로세스로 실행한다.
@@ -120,6 +121,6 @@ v1 MCP는 streamable HTTP만 지원한다.
 
 ## Runtime Boundaries
 
-- Codex app-server는 `/turn` runtime이 아니다. 자기개선 구현이 필요할 때만 별도 isolated implementer로 호출될 수 있다.
+- Codex app-server는 `/turn`에서 제외한다. 자기개선 구현이 필요할 때만 별도 isolated implementer/self-improvement infrastructure로 호출될 수 있다.
 - EXAONE profile은 tool specs, MCP discovery, ggui execution을 받지 않는다.
 - Voice는 browser microphone recording에서 multipart audio를 보내며, normal UX에서 file picker를 열지 않는다.

@@ -236,10 +236,14 @@ test("ggui_render_surface returns a renderer-neutral surface from prepared data"
 
 test("built-in tool metadata keeps tools evolvable", async () => {
   const { workspace } = await fixture();
-  for (const tool of createBuiltInTools({ workspace })) {
+  const tools = createBuiltInTools({ workspace });
+  for (const tool of tools) {
     assert.equal(typeof tool.executorId, "string");
     assert.equal(typeof tool.version, "string");
     assert.equal(tool.provenance, "builtin");
     assert.ok(["read-only", "idempotent-write", "high-risk-write"].includes(tool.risk));
   }
+  const gguiRenderSurfaceTool = tools.find((tool) => tool.name === "ggui_render_surface");
+  assert.equal(typeof gguiRenderSurfaceTool?.description, "string");
+  assert.equal(gguiRenderSurfaceTool.description.includes("restaurant.photoExplorer"), false);
 });

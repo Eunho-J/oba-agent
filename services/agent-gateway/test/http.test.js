@@ -135,7 +135,7 @@ test("POST /turn returns EXAONE final answer with main-agent metadata", async ()
   });
 });
 
-test("POST /turn attaches inline ggui surface returned by a main-agent tool call", async () => {
+test("POST /turn attaches ordered inline ggui surfaces returned by main-agent tool calls", async () => {
   const providerCalls = [];
   const lmStudioCalls = [];
   const provider = {
@@ -151,7 +151,7 @@ test("POST /turn attaches inline ggui surface returned by a main-agent tool call
                 id: "call_photo_search",
                 name: "search_images",
                 args: {
-                  query: "restaurant food interior",
+                  query: "workspace reference diagram",
                   limit: 2
                 }
               })]
@@ -168,14 +168,25 @@ test("POST /turn attaches inline ggui surface returned by a main-agent tool call
                 id: "call_surface_render",
                 name: "ggui_render_surface",
                 args: {
+                  type: "comparison.table",
+                  payload: {
+                    title: "Workspace options",
+                    columns: [{ key: "name", label: "Name" }, { key: "score", label: "Score" }],
+                    items: [{ name: "alpha", score: 91 }]
+                  }
+                }
+              }), toolCall({
+                id: "call_surface_render_gallery",
+                name: "ggui_render_surface",
+                args: {
                   type: "image.gallery",
                   payload: {
-                    title: "Actual restaurant photos",
-                    sourceUrl: "https://commons.wikimedia.org/wiki/Special:MediaSearch?search=restaurant+food+interior&type=image",
+                    title: "Reference images",
+                    sourceUrl: "https://commons.wikimedia.org/wiki/Special:MediaSearch?search=workspace+reference+diagram&type=image",
                     images: [{
-                      url: "https://upload.wikimedia.org/wikipedia/commons/example/Restaurant.jpg",
-                      caption: "Restaurant interior",
-                      source: "https://commons.wikimedia.org/wiki/File:Restaurant.jpg"
+                      url: "https://upload.wikimedia.org/wikipedia/commons/example/Reference.jpg",
+                      caption: "Reference diagram",
+                      source: "https://commons.wikimedia.org/wiki/File:Reference.jpg"
                     }]
                   }
                 }
@@ -186,7 +197,7 @@ test("POST /turn attaches inline ggui surface returned by a main-agent tool call
       }
       return {
         id: "resp_photo_final",
-        choices: [{ message: { content: "MAIN_SENTINEL: attached photo explorer." } }]
+        choices: [{ message: { content: "MAIN_SENTINEL: attached generic surfaces." } }]
       };
     }
   };
@@ -197,9 +208,9 @@ test("POST /turn attaches inline ggui surface returned by a main-agent tool call
     async complete(request) {
       lmStudioCalls.push(request);
       return {
-        id: "resp_exaone_photo",
+        id: "resp_exaone_surfaces",
         model: "exaone-4.0-1.2b",
-        choices: [{ message: { content: "EXAONE final with attached photos." } }]
+        choices: [{ message: { content: "EXAONE final with attached generic surfaces." } }]
       };
     }
   };
@@ -212,17 +223,18 @@ test("POST /turn attaches inline ggui surface returned by a main-agent tool call
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   const { port } = server.address();
   try {
-    const response = await postJson(`http://127.0.0.1:${port}`, "/turn", { message: "이 식당 리뷰 사진을 보여줘" });
+    const response = await postJson(`http://127.0.0.1:${port}`, "/turn", { message: "show two generic surfaces" });
     assert.equal(response.status, 200);
     assert.equal(response.body.ok, true);
-    assert.equal(response.body.answer, "EXAONE final with attached photos.");
-    assert.equal(response.body.surface.kind, "imageGallery");
-    assert.equal(response.body.surface.type, "image.gallery");
-    assert.equal(response.body.surface.title, "Actual restaurant photos");
-    assert.equal(response.body.surface.images[0].source, "https://commons.wikimedia.org/wiki/File:Restaurant.jpg");
-    assert.match(response.body.surface.images[0].url, /upload.wikimedia.org/);
+    assert.equal(response.body.answer, "EXAONE final with attached generic surfaces.");
+    assert.equal(response.body.gguiAttachments.length, 2);
+    assert.equal(response.body.gguiAttachments[0].kind, "comparisonTable");
+    assert.equal(response.body.gguiAttachments[1].kind, "imageGallery");
+    assert.deepEqual(response.body.surface, response.body.gguiAttachments[0]);
     assert.equal(response.body.metadata.ggui.mode, "inline");
-    assert.equal(response.body.metadata.attachments.surfaces[0].kind, "imageGallery");
+    assert.equal(response.body.metadata.ggui.count, 2);
+    assert.deepEqual(response.body.metadata.ggui.types, ["comparison.table", "image.gallery"]);
+    assert.equal(response.body.metadata.attachments.surfaces[0].kind, "comparisonTable");
     assert.equal(response.body.metadata.debug.mainAgent.toolCalls[0].name, "search_images");
     assert.equal(response.body.metadata.debug.mainAgent.toolCalls[0].status, "success");
     assert.equal(response.body.metadata.debug.mainAgent.toolCalls[1].name, "ggui_render_surface");
@@ -317,7 +329,9 @@ test("POST /turn can attach ggui from non-search data sources", async () => {
     });
     assert.equal(response.status, 200);
     assert.equal(response.body.answer, "EXAONE final with parsed local table.");
+    assert.equal(response.body.gguiAttachments.length, 1);
     assert.equal(response.body.surface.kind, "comparisonTable");
+    assert.deepEqual(response.body.surface, response.body.gguiAttachments[0]);
     assert.equal(response.body.surface.type, "comparison.table");
     assert.equal(response.body.surface.title, "Parsed local data");
     assert.equal(response.body.surface.items[0].name, "alpha");
@@ -332,20 +346,21 @@ test("POST /turn can attach ggui from non-search data sources", async () => {
 
 test("POST /turn does not heuristic-attach ggui surfaces without a tool call", async () => {
   await withServer(async (baseUrl, providerCalls) => {
-    const response = await postJson(baseUrl, "/turn", { message: "이 식당 리뷰 사진을 보여줘" });
+    const response = await postJson(baseUrl, "/turn", { message: "plain text only" });
     assert.equal(response.status, 200);
     assert.equal(response.body.ok, true);
+    assert.deepEqual(response.body.gguiAttachments, []);
     assert.equal(response.body.surface, undefined);
     assert.deepEqual(response.body.metadata.attachments.surfaces, []);
     assert.equal(providerCalls.length, 1);
   }, { fetch: commonsFetchFixture() });
 });
 
-test("POST /ggui/photo-search renders live-search payloads into image gallery surfaces", async () => {
+test("POST /ggui/image-search renders live-search payloads into image gallery surfaces", async () => {
   await withServer(async (baseUrl) => {
-    const response = await postJson(baseUrl, "/ggui/photo-search", {
+    const response = await postJson(baseUrl, "/ggui/image-search", {
       query: "restaurant food interior",
-      restaurantName: "Actual restaurant photos",
+      title: "Actual restaurant photos",
       limit: 2
     });
     assert.equal(response.status, 200);
@@ -359,16 +374,24 @@ test("POST /ggui/photo-search renders live-search payloads into image gallery su
   }, { fetch: commonsFetchFixture() });
 });
 
-test("POST /ggui/photo-search fails actionably when search input is empty or result set is empty", async () => {
+test("POST /ggui/image-search fails actionably when search input is empty or result set is empty", async () => {
   await withServer(async (baseUrl) => {
-    const missingQuery = await postJson(baseUrl, "/ggui/photo-search", {});
+    const missingQuery = await postJson(baseUrl, "/ggui/image-search", {});
     assert.equal(missingQuery.status, 400);
     assert.equal(missingQuery.body.error.code, "GGUI_IMAGE_SEARCH_QUERY_REQUIRED");
 
-    const emptySearch = await postJson(baseUrl, "/ggui/photo-search", { query: "no results" });
+    const emptySearch = await postJson(baseUrl, "/ggui/image-search", { query: "no results" });
     assert.equal(emptySearch.status, 404);
     assert.equal(emptySearch.body.error.code, "GGUI_IMAGE_SEARCH_EMPTY");
   }, { fetch: async () => jsonResponse({ query: { pages: {} } }) });
+});
+
+test("POST /ggui/photo-search is not exposed", async () => {
+  await withServer(async (baseUrl) => {
+    const response = await postJson(baseUrl, "/ggui/photo-search", { query: "legacy route" });
+    assert.equal(response.status, 404);
+    assert.equal(response.body.error, "not_found");
+  });
 });
 
 test("POST /turn debug metadata includes main-agent + EXAONE IO for successful read tool call", async () => {

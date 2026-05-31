@@ -7,7 +7,7 @@ This matrix tracks the OBA direct runtime against pinned `openai/codex` runtime 
 - `main-agent`: tools, MCP, ggui, reasoning memory, self-improvement diagnostics.
 - `exaone-agent`: same engine entrypoint, LM Studio emotional route, expression memory, no tool specs, no MCP discovery, no ggui execution.
 
-Codex app-server is not part of `/turn` runtime. It can only be used as an isolated implementer for self-improvement work.
+Codex app-server is excluded from `/turn`. It can only be used as isolated implementer/self-improvement infrastructure.
 
 ## Current Parity Rows
 
@@ -28,6 +28,6 @@ Codex app-server is not part of `/turn` runtime. It can only be used as an isola
 - Main and EXAONE must continue to share the same profiled engine entrypoint.
 - EXAONE request construction must omit `tools`, `tool_choice`, `parallel_tool_calls`, `functions`, and `function_call`.
 - Compaction threshold defaults to `0.9`.
-- ggui surfaces render inside assistant answer bubbles, not as a separate bottom panel.
+- ggui surfaces render inside assistant answer bubbles, not as a separate bottom panel, and are described with generic inline result examples such as reference image gallery, comparison table, and action confirmation.
 - Self-improvement is internal and not user-visible in normal chat UI.
 - Hook and isolated implementer failures are returned as diagnostic metadata and must not crash `/turn`.

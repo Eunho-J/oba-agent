@@ -28,7 +28,7 @@ async function main() {
   await fs.mkdir(path.dirname(evidencePath), { recursive: true });
   const summary = {
     meetingRecall: await meetingRecallScenario(),
-    restaurantPhotos: await restaurantPhotoScenario(),
+    imageGallery: await imageGalleryScenario(),
     purchaseGuard: await purchaseGuardScenario(),
     internalEvolution: await internalEvolutionScenario(),
     publishRollback: await publishRollbackScenario(),
@@ -38,8 +38,8 @@ async function main() {
   };
   assert(summary.meetingRecall.coreMemoryIncluded, "meeting recall must include core memory");
   assert(summary.meetingRecall.secretRedacted, "meeting recall must redact secret text");
-  assert(summary.restaurantPhotos.httpStatus === 200, "ggui render must return HTTP 200");
-  assert(summary.restaurantPhotos.photoCount === 2, "ggui render must keep both photos");
+  assert(summary.imageGallery.httpStatus === 200, "ggui render must return HTTP 200");
+  assert(summary.imageGallery.imageCount === 2, "ggui render must keep both images");
   assert(summary.purchaseGuard.refusedWithoutToken, "purchase must refuse missing confirmation token");
   assert(summary.purchaseGuard.executedAfterToken, "purchase must execute only after prepared token");
   assert(summary.internalEvolution.internalOnly, "self-evolution candidates must stay internal");
@@ -97,29 +97,29 @@ async function meetingRecallScenario() {
   };
 }
 
-async function restaurantPhotoScenario() {
+async function imageGalleryScenario() {
   const server = createServer({ enableAgentTurnAlias: true, mcpServers: {} }, {
     provider: fakeProvider(),
     logger: { event: () => {} }
   });
   const baseUrl = await listen(server);
-  const fixture = JSON.parse(await fs.readFile(path.join(repoRoot, "fixtures/ggui/restaurant-photo-explorer.json"), "utf8"));
+  const fixture = JSON.parse(await fs.readFile(path.join(repoRoot, "fixtures/ggui/reference-image-gallery.json"), "utf8"));
   const response = await postJson(`${baseUrl}/ggui/render`, {
     intent: {
-      type: "restaurantPhotoExplorer",
+      type: "image.gallery",
       payload: fixture
     }
   });
   const surface = response.body?.surface ?? {};
-  const photos = Array.isArray(surface.images) ? surface.images : surface.photos ?? [];
+  const images = Array.isArray(surface.images) ? surface.images : [];
   servers.push(server);
-  logs.push(`restaurantPhotos status=${response.status} body=${compact(JSON.stringify(response.body))}`);
+  logs.push(`imageGallery status=${response.status} body=${compact(JSON.stringify(response.body))}`);
   return {
     baseUrl,
     httpStatus: response.status,
-    restaurantName: surface.restaurantName ?? surface.title ?? null,
-    photoCount: photos.length,
-    photoUrls: photos.map((photo) => photo.url)
+    title: surface.title ?? null,
+    imageCount: images.length,
+    imageUrls: images.map((image) => image.url)
   };
 }
 

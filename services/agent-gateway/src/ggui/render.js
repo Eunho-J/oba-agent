@@ -3,8 +3,6 @@ import { gguiRenderValidationError } from "./errors.js";
 const SUPPORTED_INTENT_TYPES = new Map([
   ["image.gallery", "image.gallery"],
   ["imageGallery", "image.gallery"],
-  ["restaurant.photoExplorer", "restaurant.photoExplorer"],
-  ["restaurantPhotoExplorer", "restaurant.photoExplorer"],
   ["comparison.table", "comparison.table"],
   ["comparisonTable", "comparison.table"]
 ]);
@@ -26,13 +24,6 @@ export function renderGguiSurface(intent) {
   const normalizedIntent = normalizeIntent(intent);
   if (normalizedIntent.type === "image.gallery") {
     return buildImageGallerySurface(normalizedIntent.payload);
-  }
-  if (normalizedIntent.type === "restaurant.photoExplorer") {
-    return buildImageGallerySurface({
-      title: normalizedIntent.payload.restaurantName,
-      sourceUrl: normalizedIntent.payload.sourceUrl,
-      images: normalizedIntent.payload.photos
-    });
   }
   if (normalizedIntent.type === "comparison.table") {
     return buildComparisonTableSurface(normalizedIntent.payload);
@@ -59,7 +50,7 @@ function normalizeIntent(intent) {
 
 function buildImageGallerySurface(payload) {
   const title = requireNonEmptyString(payload.title, "$.intent.payload.title");
-  const rawImages = payload.images || payload.photos;
+  const rawImages = payload.images;
   if (!Array.isArray(rawImages)) {
     throw gguiRenderValidationError("image gallery images must be an array", {
       path: "$.intent.payload.images"

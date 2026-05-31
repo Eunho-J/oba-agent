@@ -43,7 +43,7 @@ flowchart LR
 - Main Agent API는 판단/계획/툴 실행을 담당하는 이성지능이다.
 - local workflow 안의 memory 역할은 EXAONE expression memory와 Main Agent reasoning memory로 분리한다. 표현 기억이 행동 결정을 넘겨받지 않고, 이성 기억이 사용자-facing 말투를 고정하지 않게 하기 위해서다.
 - Obsidian vault는 지식저장소다. 최상위/core 문서는 항상 기억해야 하는 내용에 가깝게 취급하고, 길이 제한을 넘는 publish 후보는 split 후보를 먼저 만들도록 강제한다.
-- ggui는 모바일/웹에서 에이전트가 직접 필요한 결과 UI를 띄우는 사용자-facing 렌더 표면이다. workflow runtime node가 아니고, 자기개선 과정을 사용자에게 보여주는 UI도 아니다.
+- ggui는 모바일/웹에서 에이전트가 직접 필요한 결과 UI를 띄우는 사용자-facing 렌더 표면이다. workflow runtime node가 아니고, 자기개선 과정을 사용자에게 보여주는 UI도 아니다. 예시는 reference image gallery, comparison table, action confirmation처럼 일반적인 inline 결과 표면으로 설명한다.
 - ApiFuse는 현실 API를 찾고 연결하는 행동 표면이다. 실행성 있는 액션은 confirmation token 없이 실행하지 않는다.
 
 ## 메인 에이전트 API
@@ -52,7 +52,7 @@ flowchart LR
 
 - Node HTTP 서버 또는 얇은 Fastify/Express 서버
 - 단일 `POST /turn` 진입점
-- 작은 provider adapter: v1은 `codex-as-api` local OpenAI-compatible HTTP testbed, 이후 OpenRouter/FriendlyAI로 교체
+- 작은 provider adapter: v1은 `codex-as-api` local OpenAI-compatible HTTP testbed. TODO: future OpenAI API-compatible provider support remains a swappable boundary, not an implementation promise here.
 - 고정된 초기 tool registry: `read`, `write`, `edit`, `bash` 네 개만 built-in으로 노출
 - MCP adapter: streamable HTTP MCP를 server bootstrap에서 registry에 namespaced external tool로 붙임
 - 한 턴 안에서만 도는 단순 tool loop
@@ -154,9 +154,9 @@ sequenceDiagram
 
 ggui는 다음 네 가지 화면을 생성/갱신할 수 있어야 한다.
 
-- Restaurant Photo Explorer: 사용자가 "이 식당 리뷰 사진 보여줘"라고 하면 검색/수집된 사진 결과를 모바일/웹에서 탐색 가능한 표면으로 표시
+- Reference Image Gallery: 사용자가 이미지 결과를 요청했을 때 검색/수집된 사진 결과를 모바일/웹에서 탐색 가능한 표면으로 표시
+- Comparison Table: 후보를 비교할 수 있게 항목, 가격, 장단점, 출처를 보여줌
 - Action Confirmation: ApiFuse 액션 실행 전 확인/보류 상태를 보여주되, token 없는 실행은 막음
-- Result Review: workflow나 agent가 만든 renderer-neutral 결과를 카드/목록/사진 탐색 같은 UI로 표시
 - Error/Fallback Surface: gateway가 실패해도 sample/fallback과 오류 상태를 분리해서 보여줌
 
 ggui 이벤트는 structured event로 Main Agent API에 돌아갈 수 있지만, ggui 자체를 workflow node로 실행하지 않는다.

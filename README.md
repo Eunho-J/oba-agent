@@ -34,7 +34,7 @@ curl -X POST http://localhost:8787/turn \
 
 `POST /turn` v1은 `message`만 사용자 입력 필드로 받습니다. 예전 `transcript`/`audioText` 입력은 새 엔진 계약과 섞이지 않게 `VALIDATION_ERROR`로 거부합니다.
 
-`npm run qa:e2e`는 로컬 E2E 데모입니다. 회의 기억 recall, Obsidian core memory, ggui restaurant photo render, ApiFuse guarded purchase, internal-only self-evolution candidate, registry publish/rollback, legacy-runtime scan을 한 번에 검증합니다. Browser 기반 수동 검증은 Codex Browser plugin을 사용하고 standalone Playwright는 사용하지 않습니다.
+`npm run qa:e2e`는 로컬 E2E 데모입니다. 회의 기억 recall, Obsidian core memory, ggui reference image gallery / comparison table / action confirmation, ApiFuse guarded purchase, internal-only self-evolution candidate, registry publish/rollback, legacy-runtime scan을 한 번에 검증합니다. Browser 기반 수동 검증은 Codex Browser plugin을 사용하고 standalone Playwright는 사용하지 않습니다.
 
 ## Docs
 

@@ -21,7 +21,7 @@
 - Gemini 3.5 Flash via OpenRouter: 메인 에이전트 API의 추론 모델 후보. 자기수정 판단, 복잡한 작업 계획, YAML/프롬프트 개선안 생성에 쓴다.
 - local workflows: 메인 에이전트가 호출하는 온톨로지/메모리 역할의 워크플로우 계층. local workflow runtime 내부 에이전트를 메인으로 쓰지 않고, ontology/memory workflow 결과를 JSON 또는 답변으로 받아 메인 에이전트 API가 사용한다. 메모리는 EXAONE expression memory와 Main Agent reasoning memory로 분리한다.
 - ApiFuse: 사용자가 사고 싶다, 주문하고 싶다, 조회하고 싶다 같은 현실 작업을 할 때 필요한 API를 찾고 연결하는 도구 표면.
-- ggui: 에이전트가 모바일 앱 안에서 상황에 맞는 UI를 생성하고 띄우는 화면 표면이자, 사용자가 recall policy, 새 워크플로우/노드/연결을 편집하고 배포 후보를 검토하는 자기편집 workbench.
+- ggui: 에이전트가 모바일 앱 안에서 상황에 맞는 UI를 생성하고 띄우는 화면 표면이자, 사용자가 reference image gallery, comparison table, action confirmation 같은 inline 결과를 검토하는 workbench.
 
 ## 메모리와 회상 분리
 
@@ -51,12 +51,12 @@ Flutter도 멀티플랫폼에는 강하지만, 이 제품의 위험한 부분은
 
 ## ggui Workbench 범위
 
-ggui는 단순 결과 카드가 아니다. 다음 편집 표면을 담당해야 한다.
+ggui는 단순 결과 카드가 아니다. 다음 inline 결과 표면을 담당해야 한다.
 
-- Workflow Builder: 사용자가 요청한 새 업무 흐름을 노드 목록과 연결 요약으로 보여준다.
-- Node Editor: Prompt, Local Agent action, local workflow memory call, ApiFuse operation, ggui render, Condition, Human confirmation, Validator 노드를 편집한다.
-- Connection Mapper: 새 노드 출력과 로컬 workflow registry, local workflow YAML 노드 입력을 연결한다.
-- Publish Review: 변경 요약, diff, 검증 결과, 위험도, 배포/보류/롤백 액션을 보여준다.
+- Reference Image Gallery: 사용자가 요청한 이미지 결과를 출처와 함께 보여준다.
+- Comparison Table: 후보를 비교할 수 있게 항목, 가격, 장단점, 출처를 보여준다.
+- Action Confirmation: 외부 실행 전 확인/보류 상태를 보여주고, token 없는 실행은 막는다.
+- Error/Fallback Surface: gateway가 실패해도 sample/fallback과 오류 상태를 분리해서 보여준다.
 
 ## 초기 에이전트 구성
 
@@ -84,8 +84,8 @@ ggui는 단순 결과 카드가 아니다. 다음 편집 표면을 담당해야 
 ## 해커톤 성공 기준
 
 - Android 또는 Web/desktop에서 STT adapter를 거친 한국어 텍스트가 에이전트 턴으로 들어간다. 초기 데모는 `whisper.cpp`와 API STT를 같은 입력 contract로 교체 가능해야 한다.
-- 에이전트가 ggui로 모바일 화면에 맞는 동적 UI와 자기편집 workbench를 띄운다.
-- 사용자가 ggui workbench 안에서 새 workflow/node/connection 후보를 검토하고 수정할 수 있다.
+- 에이전트가 ggui로 모바일 화면에 맞는 동적 UI와 inline result surface를 띄운다.
+- 사용자가 ggui workbench 안에서 비교표, 이미지 갤러리, 확인 화면을 검토할 수 있다.
 - ApiFuse MCP를 통해 필요한 API 후보를 탐색한다.
 - 같은 키워드라도 상황에 따라 다른 기억 관점을 회상하는 데모를 보여준다.
 - 로컬 prompt/workflow 상태와 local workflow YAML을 읽고, 단순 skill 추가가 아니라 recall policy 수정안을 만든다.

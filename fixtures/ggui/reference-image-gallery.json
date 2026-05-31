@@ -1,0 +1,15 @@
+{
+  "title": "Workspace Reference Images",
+  "sourceUrl": "https://example.com/reference-images",
+  "images": [
+    {
+      "url": "https://images.example.com/reference/1.jpg",
+      "caption": "Main reference board",
+      "source": "example"
+    },
+    {
+      "url": "https://images.example.com/reference/2.jpg",
+      "caption": "Detail reference"
+    }
+  ]
+}

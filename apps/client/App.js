@@ -23,12 +23,12 @@ const SAMPLE_SURFACE = {
   images: [
     {
       url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5",
-      caption: "Fallback dining room",
+      caption: "Fallback reference image",
       source: "sample"
     },
     {
       url: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601",
-      caption: "Fallback dish",
+      caption: "Fallback detail image",
       source: "sample"
     }
   ]
@@ -110,7 +110,7 @@ export default function App() {
         metadata: body?.metadata || {},
         toolCalls: Array.isArray(body?.toolCalls) ? body.toolCalls : [],
         provider: body?.provider || {},
-        surface: normalizeOptionalSurface(body?.surface)
+        gguiAttachments: normalizeOptionalSurfaces(body?.gguiAttachments, body?.surface)
       })]);
     } catch (error) {
       const textError = `응답 실패: ${formatError(error)}`;
@@ -350,7 +350,9 @@ function MessageBubble({ message, debugEnabled }) {
     <View style={[styles.messageBubble, isUser ? styles.userBubble : styles.assistantBubble]}>
       <Text style={styles.messageRole}>{isUser ? "You" : message.kind === "final" ? "EXAONE" : "OBA"}</Text>
       <ReadableText kind={message.kind === "error" ? "error" : "message"}>{message.text}</ReadableText>
-      {message.surface ? <InlineSurface surface={message.surface} /> : null}
+      {(message.gguiAttachments || []).map((surface, index) => (
+        <InlineSurface key={`${surface.type || surface.kind}-${index}`} surface={surface} />
+      ))}
       {showDebugPanel ? <DebugPanel message={message} /> : null}
     </View>
   );
@@ -361,12 +363,12 @@ function InlineSurface({ surface }) {
   if (surface.kind === "comparisonTable") {
     return <ComparisonSurface surface={surface} />;
   }
-  if (surface.kind !== "imageGallery" && surface.kind !== "photoExplorer") return null;
-  const title = surface.title || surface.restaurantName || "Gallery";
-  const images = surface.images || surface.photos || [];
+  if (surface.kind !== "imageGallery") return null;
+  const title = surface.title || "Gallery";
+  const images = surface.images || [];
   return (
     <View style={styles.inlineSurface} testID="inline-ggui-surface">
-      <ReadableText kind="restaurantName">{title}</ReadableText>
+      <ReadableText kind="surfaceTitle">{title}</ReadableText>
       {surface.sourceUrl
         ? (
           <Pressable onPress={() => Linking.openURL(surface.sourceUrl)}>
@@ -393,7 +395,7 @@ function InlineSurface({ surface }) {
 function ComparisonSurface({ surface }) {
   return (
     <View style={styles.inlineSurface} testID="inline-ggui-surface">
-      <ReadableText kind="restaurantName">{surface.title || "Comparison"}</ReadableText>
+      <ReadableText kind="surfaceTitle">{surface.title || "Comparison"}</ReadableText>
       <View style={styles.tableSurface}>
         <View style={styles.tableRow}>
           {surface.columns.map((column) => (
@@ -493,7 +495,7 @@ function ReadableText({ children, kind }) {
     );
   }
 
-  const textStyle = kind === "restaurantName" ? styles.restaurantName
+  const textStyle = kind === "surfaceTitle" ? styles.surfaceTitle
     : kind === "photoCaption" ? styles.photoCaption
       : kind === "photoUrl" ? styles.photoUrl
         : kind === "error" ? styles.errorText
@@ -530,14 +532,14 @@ function isPretextFallbackForced() {
 }
 
 function pretextFont(kind) {
-  if (kind === "restaurantName") return '700 18px "Avenir Next", "Helvetica Neue", sans-serif';
+  if (kind === "surfaceTitle") return '700 18px "Avenir Next", "Helvetica Neue", sans-serif';
   if (kind === "photoCaption") return '600 14px "Avenir Next", "Helvetica Neue", sans-serif';
   if (kind === "photoUrl") return '12px "Avenir Next", "Helvetica Neue", sans-serif';
   return '14px "Avenir Next", "Helvetica Neue", sans-serif';
 }
 
 function pretextLineHeight(kind) {
-  if (kind === "restaurantName") return 24;
+  if (kind === "surfaceTitle") return 24;
   if (kind === "photoUrl") return 17;
   return 20;
 }
@@ -549,7 +551,7 @@ function stringifyReadable(value) {
 }
 
 function readableWebStyle(kind, pretextState) {
-  if (kind === "restaurantName") {
+  if (kind === "surfaceTitle") {
     return baseReadableWebStyle({ color: "#111827", fontSize: 18, fontWeight: 700, lineHeight: "24px" }, pretextState);
   }
   if (kind === "photoCaption") {
@@ -756,8 +758,8 @@ function normalizeSurface(surface) {
       items: surface.items.filter((item) => item && typeof item === "object" && !Array.isArray(item))
     };
   }
-  const images = Array.isArray(surface.images) ? surface.images : surface.photos;
-  if ((surface.kind !== "imageGallery" && surface.kind !== "photoExplorer") || !Array.isArray(images)) {
+  const images = surface.images;
+  if (surface.kind !== "imageGallery" || !Array.isArray(images)) {
     return SAMPLE_SURFACE;
   }
   return {
@@ -765,9 +767,7 @@ function normalizeSurface(surface) {
     type: surface.type || "image.gallery",
     title: typeof surface.title === "string" && surface.title.trim()
       ? surface.title.trim()
-      : typeof surface.restaurantName === "string" && surface.restaurantName.trim()
-        ? surface.restaurantName.trim()
-        : SAMPLE_SURFACE.title,
+      : SAMPLE_SURFACE.title,
     sourceUrl: typeof surface.sourceUrl === "string" ? surface.sourceUrl : "",
     images: images.map((photo) => ({
       url: typeof photo?.url === "string" ? photo.url : "",
@@ -777,9 +777,12 @@ function normalizeSurface(surface) {
   };
 }
 
-function normalizeOptionalSurface(surface) {
-  if (!surface) return undefined;
-  return normalizeSurface(surface);
+function normalizeOptionalSurfaces(attachments, fallbackSurface) {
+  if (Array.isArray(attachments)) {
+    return attachments.map((surface) => normalizeSurface(surface));
+  }
+  if (fallbackSurface) return [normalizeSurface(fallbackSurface)];
+  return [];
 }
 
 function isFakeMicrophoneEnabled() {
@@ -1009,7 +1012,7 @@ const styles = StyleSheet.create({
     color: "#991b1b",
     fontSize: 13
   },
-  restaurantName: {
+  surfaceTitle: {
     fontSize: 18,
     fontWeight: "700",
     color: "#111827"

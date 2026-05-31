@@ -39,8 +39,12 @@ test("POST /ggui/render accepts either intent wrapper or direct type and payload
     ));
     const wrapped = await postJson(baseUrl, "/ggui/render", {
       intent: {
-        type: "restaurant.photoExplorer",
-        payload: restaurantFixture
+        type: "imageGallery",
+        payload: {
+          title: restaurantFixture.restaurantName,
+          sourceUrl: restaurantFixture.sourceUrl,
+          images: restaurantFixture.photos
+        }
       }
     });
     assert.equal(wrapped.status, 200);
@@ -70,10 +74,24 @@ test("POST /ggui/render rejects malformed and unsupported intents with typed err
   await withServer(async (baseUrl) => {
     const malformed = await postJson(baseUrl, "/ggui/render", {
       type: "image.gallery",
-      payload: { restaurantName: "x", photos: "not-an-array" }
+      payload: { title: "x", images: "not-an-array" }
     });
     assert.equal(malformed.status, 400);
     assert.equal(malformed.body.error.code, "GGUI_RENDER_INVALID");
+
+    const restaurantAlias = await postJson(baseUrl, "/ggui/render", {
+      type: "restaurant.photoExplorer",
+      payload: {}
+    });
+    assert.equal(restaurantAlias.status, 400);
+    assert.equal(restaurantAlias.body.error.code, "GGUI_RENDER_INVALID");
+
+    const restaurantCamelAlias = await postJson(baseUrl, "/ggui/render", {
+      type: "restaurantPhotoExplorer",
+      payload: {}
+    });
+    assert.equal(restaurantCamelAlias.status, 400);
+    assert.equal(restaurantCamelAlias.body.error.code, "GGUI_RENDER_INVALID");
 
     const unsupported = await postJson(baseUrl, "/ggui/render", {
       type: "unknown.surface",

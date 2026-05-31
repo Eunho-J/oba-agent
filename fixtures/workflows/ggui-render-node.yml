@@ -12,7 +12,7 @@ nodes:
   - id: render
     type: ggui.render
     config:
-      intent: restaurantPhotoExplorer
+      intent: image.gallery
     inputs:
       data:
         type: string

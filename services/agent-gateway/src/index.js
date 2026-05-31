@@ -13,7 +13,7 @@ import { createDefaultToolRegistry } from "./tools/registry.js";
 import { createApiFuseGuardService } from "./actions/apifuse-guard.js";
 import { runGatewayWorkflow } from "./workflows/gateway-runner.js";
 import { normalizeRenderIntentRequest, renderGguiSurface } from "./ggui/render.js";
-import { searchRestaurantPhotoSurface } from "./ggui/photo-search.js";
+import { searchImageGallerySurface } from "./ggui/image-search.js";
 import { createLmStudioClient } from "./clients/exaone.js";
 import { stageSelfImprovementCandidates, runSelfImprovementRegistrySmoke } from "./self-improvement.js";
 import { transcribeVoiceRequest } from "./voice/whisper.js";
@@ -173,11 +173,11 @@ export function createServer(appConfig = config, deps = {}) {
         return sendJson(res, 200, { ok: true, surface }, corsHeaders);
       }
 
-      if (req.method === "POST" && req.url === "/ggui/photo-search") {
+      if (req.method === "POST" && req.url === "/ggui/image-search") {
         const body = await readJson(req);
-        const surface = await searchRestaurantPhotoSurface({
+        const surface = await searchImageGallerySurface({
           query: body.query,
-          restaurantName: body.restaurantName,
+          title: body.title,
           limit: body.limit,
           fetchImpl
         });
@@ -372,10 +372,12 @@ async function runMainToExaoneTurn({
     mainAgentAnswer: mainResult.answer,
     exaoneAnswer: exaoneResult.answer
   }, { logger }));
-  const inlineSurface = firstAttachedSurface(mainResult);
+  const gguiAttachments = attachedGguiSurfaces(mainResult);
+  const inlineSurface = gguiAttachments[0];
   return {
     ...mainResult,
     answer: exaoneResult.answer,
+    gguiAttachments,
     surface: inlineSurface,
     metadata: {
       ...(mainResult.metadata || {}),
@@ -384,7 +386,13 @@ async function runMainToExaoneTurn({
       finalAnswerModel: lmStudioClient.model,
       finalAnswerBaseUrl: lmStudioClient.baseUrl,
       finalAnswerMode: "exaone.final",
-      ggui: inlineSurface ? { mode: "inline", type: inlineSurface.type } : undefined,
+      ggui: gguiAttachments.length > 0
+        ? {
+          mode: "inline",
+          count: gguiAttachments.length,
+          types: gguiAttachments.map((surface) => surface.type)
+        }
+        : undefined,
       selfImprovement: selfImprovementDiagnostics,
       debug: {
         ...(mainResult?.metadata?.debug || {}),
@@ -468,10 +476,10 @@ async function collectSelfImprovementDiagnostics({ appConfig, fetchImpl, logger 
   }
 }
 
-function firstAttachedSurface(agentResult) {
+function attachedGguiSurfaces(agentResult) {
   const surfaces = agentResult?.metadata?.attachments?.surfaces;
-  if (!Array.isArray(surfaces) || surfaces.length === 0) return undefined;
-  return surfaces[0];
+  if (!Array.isArray(surfaces)) return [];
+  return surfaces;
 }
 
 function extractAssistantText(completion) {

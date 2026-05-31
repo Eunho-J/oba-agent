@@ -5,7 +5,7 @@ import { promisify } from "node:util";
 import { ToolExecutionError } from "./errors.js";
 import { createWorkspace } from "./workspace.js";
 import { renderGguiSurface } from "../ggui/render.js";
-import { searchImageResults } from "../ggui/photo-search.js";
+import { searchImageResults } from "../ggui/image-search.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -171,7 +171,7 @@ function createGguiRenderSurfaceTool() {
     description: [
       "Build a dynamic UI surface from prepared data and attach it to the assistant answer.",
       "Use this after any file, parser, algorithm, shell command, workflow, MCP tool, external search, or prior tool result should be displayed as UI.",
-      "Supported surface types include image.gallery, comparison.table, and restaurant.photoExplorer as a compatibility alias."
+      "Supported surface types include image.gallery and comparison.table."
     ].join(" "),
     risk: "read-only",
     parameters: objectSchema({

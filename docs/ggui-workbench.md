@@ -32,23 +32,19 @@ GitHub release tags currently do not appear to mirror every npm alpha tag, so np
 
 ggui is the user-facing result surface for cases where plain text is a poor fit. It renders renderer-neutral outputs from the gateway into mobile/web UI. It is not the local workflow runtime, not an allowed workflow node, and not the UI for internal self-evolution.
 
-The user should be able to say:
+The user should be able to ask for inline surfaces such as a reference image gallery, a comparison table, or an action confirmation view.
 
-```text
-나 이 식당 리뷰 사진 좀 보여줘.
-```
-
-The agent can search or receive restaurant/photo data through the gateway, shape it into a neutral `restaurantPhotoExplorer` surface, and show a photo explorer UI. The render surface does not fetch remote photos by itself; it displays provided URLs and source metadata.
+The agent can search or receive data through the gateway, shape it into a neutral attachment surface, and show the result inside the assistant answer bubble. The render surface does not fetch remote assets by itself; it displays provided URLs and source metadata.
 
 ## Required result surfaces
 
-### Restaurant Photo Explorer
+### Reference Image Gallery
 
-Shows review/photo exploration results.
+Shows image exploration results.
 
-- restaurant name
+- item title or subject name
 - source URL
-- photo URLs
+- image URLs
 - captions or source labels when available
 - fallback/sample result when the gateway is unavailable
 
@@ -79,10 +75,10 @@ ggui surfaces may emit structured user-selection events back to the agent.
 ```json
 {
   "type": "surface.selection",
-  "surfaceId": "restaurant-photo-explorer",
+  "surfaceId": "reference-image-gallery",
   "payload": {
     "photoUrl": "https://example.test/review-1.jpg",
-    "restaurantName": "Samseong Noodle House"
+    "itemTitle": "Workspace reference"
   }
 }
 ```

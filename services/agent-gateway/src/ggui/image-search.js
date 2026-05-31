@@ -3,21 +3,21 @@ import { GguiRenderError } from "./errors.js";
 
 const COMMONS_API_URL = "https://commons.wikimedia.org/w/api.php";
 
-export async function searchRestaurantPhotoSurface({
+export async function searchImageGallerySurface({
   query,
-  restaurantName,
+  title,
   limit = 4,
   fetchImpl = fetch
 } = {}) {
   const result = await searchImageResults({
-    query: query || restaurantName,
+    query,
     limit,
     fetchImpl
   });
   return renderGguiSurface({
     type: "image.gallery",
     payload: {
-      title: restaurantName || result.query,
+      title: title || result.query,
       sourceUrl: result.sourceUrl,
       images: result.images
     }
@@ -103,7 +103,7 @@ function commonsPagesToPhotos(body) {
 
 function normalizeSearchQuery(value) {
   if (typeof value !== "string" || value.trim().length === 0) {
-    throw new GguiRenderError("photo search query must be a non-empty string", {
+    throw new GguiRenderError("image search query must be a non-empty string", {
       code: "GGUI_IMAGE_SEARCH_QUERY_REQUIRED",
       status: 400
     });
