@@ -4,6 +4,7 @@ import path from "node:path";
 import { spawn } from "node:child_process";
 
 const AUDIO_EXTENSIONS = new Set([".wav", ".mp3", ".m4a", ".flac", ".ogg", ".webm"]);
+const WHISPER_INPUT_EXTENSIONS = new Set([".wav", ".mp3", ".flac", ".ogg"]);
 const AUDIO_CONTENT_PREFIX = "audio/";
 
 export class VoiceInputError extends Error {
@@ -37,28 +38,35 @@ export async function transcribeVoiceRequest(req, {
 
 export async function defaultWhisperTranscriber(upload, config = {}) {
   const binary = config.whisperBin || "whisper-cli";
+  const preparedUpload = await prepareWhisperInput(upload, config);
   const args = [
     ...(config.whisperModel ? ["-m", config.whisperModel] : []),
     ...(Array.isArray(config.whisperExtraArgs) ? config.whisperExtraArgs : []),
     "-f",
-    upload.path
+    preparedUpload.path
   ];
-  const result = await runCommand(binary, args);
-  const text = extractWhisperText(result.stdout || result.stderr);
-  if (!text) {
-    throw new VoiceInputError("whisper.cpp did not return transcript text", {
-      code: "VOICE_TRANSCRIPT_EMPTY",
-      status: 502,
-      details: { binary, args }
-    });
+  try {
+    const result = await runCommand(binary, args);
+    const text = extractWhisperText(result.stdout || result.stderr);
+    if (!text) {
+      throw new VoiceInputError("whisper.cpp did not return transcript text", {
+        code: "VOICE_TRANSCRIPT_EMPTY",
+        status: 502,
+        details: { binary, args }
+      });
+    }
+    return {
+      ok: true,
+      text,
+      provider: "whisper.cpp",
+      command: { binary, args },
+      audio: uploadSummary(preparedUpload, upload)
+    };
+  } finally {
+    if (preparedUpload.cleanupPath && preparedUpload.cleanupPath !== upload.cleanupPath) {
+      await fs.rm(preparedUpload.cleanupPath, { recursive: true, force: true });
+    }
   }
-  return {
-    ok: true,
-    text,
-    provider: "whisper.cpp",
-    command: { binary, args },
-    audio: uploadSummary(upload)
-  };
 }
 
 async function readJsonAudioPath(req) {
@@ -173,13 +181,46 @@ function guessContentType(filePath) {
   return "application/octet-stream";
 }
 
-function uploadSummary(upload) {
+async function prepareWhisperInput(upload, config) {
+  const extension = path.extname(upload.filename || upload.path).toLowerCase();
+  if (WHISPER_INPUT_EXTENSIONS.has(extension)) return upload;
+
+  const ffmpegBin = config.ffmpegBin || "ffmpeg";
+  const tempDir = upload.cleanupPath || await fs.mkdtemp(path.join(os.tmpdir(), "oba-voice-convert-"));
+  const parsed = path.parse(safeFilename(upload.filename || "voice-upload"));
+  const wavPath = path.join(tempDir, `${parsed.name || "voice-upload"}.wav`);
+  await runCommand(ffmpegBin, [
+    "-y",
+    "-i",
+    upload.path,
+    "-ar",
+    "16000",
+    "-ac",
+    "1",
+    "-c:a",
+    "pcm_s16le",
+    wavPath
+  ]);
   return {
+    ...upload,
+    path: wavPath,
+    filename: path.basename(wavPath),
+    contentType: "audio/wav",
+    cleanupPath: upload.cleanupPath || tempDir,
+    source: uploadSummary(upload)
+  };
+}
+
+function uploadSummary(upload, source) {
+  const summary = {
     filename: upload.filename,
     contentType: upload.contentType,
     size: upload.size,
     path: upload.path
   };
+  if (source && source.path !== upload.path) summary.source = uploadSummary(source);
+  if (upload.source) summary.source = upload.source;
+  return summary;
 }
 
 function extractWhisperText(output) {

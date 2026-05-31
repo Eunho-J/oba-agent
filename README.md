@@ -29,6 +29,16 @@ cp .env.example .env.local
 Requirements:
 
 - Node.js 20 or newer.
+- whisper.cpp CLI for local voice input:
+
+```bash
+brew install whisper-cpp
+brew install ffmpeg
+mkdir -p ~/.cache/whisper.cpp
+curl -L -o ~/.cache/whisper.cpp/ggml-base.bin \
+  https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin
+```
+
 - LM Studio with an OpenAI-compatible local server on `http://127.0.0.1:1234/v1`.
 - EXAONE model loaded in LM Studio. The default model id is `exaone-4.0-1.2b`; change `OBA_LLM_MODEL`, `EXAONE_MODEL`, and `OBA_LLM_MODEL_ALLOWLIST` in `.env.local` if your LM Studio model id is different.
 - `codex-as-api` for the v1 main provider. Run it separately after `codex login`:
@@ -42,6 +52,7 @@ The default gateway config expects:
 - main provider: `http://127.0.0.1:18080/v1`
 - main provider health: `http://127.0.0.1:18080/health`
 - LM Studio / EXAONE: `http://127.0.0.1:1234/v1`
+- whisper.cpp binary/model and browser audio conversion: set `OBA_WHISPER_CPP_BIN`, `OBA_WHISPER_CPP_MODEL`, and `OBA_FFMPEG_BIN` in `.env.local`
 - gateway: `http://127.0.0.1:8787`
 - web client: Expo's printed web URL, usually `http://localhost:8081`
 

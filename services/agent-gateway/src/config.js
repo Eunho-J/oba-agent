@@ -22,6 +22,7 @@ export function loadConfig(env = process.env) {
     voice: {
       whisperBin: env.OBA_WHISPER_CPP_BIN || env.WHISPER_CPP_BIN || "whisper-cli",
       whisperModel: env.OBA_WHISPER_CPP_MODEL || env.WHISPER_CPP_MODEL || "",
+      ffmpegBin: env.OBA_FFMPEG_BIN || "ffmpeg",
       whisperExtraArgs: parseCsvEnv(env.OBA_WHISPER_CPP_ARGS || ""),
       uploadMaxBytes: parsePositiveIntegerEnv(env.OBA_VOICE_UPLOAD_MAX_BYTES, 10 * 1024 * 1024, "OBA_VOICE_UPLOAD_MAX_BYTES")
     },

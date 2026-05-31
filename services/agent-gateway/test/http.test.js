@@ -704,6 +704,61 @@ test("POST /voice/transcribe accepts audio paths through a whisper.cpp-compatibl
   }
 });
 
+test("POST /voice/transcribe converts browser webm uploads before whisper.cpp", async () => {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "oba-voice-webm-test-"));
+  const ffmpegArgsPath = path.join(tempDir, "ffmpeg-args.txt");
+  const whisperArgsPath = path.join(tempDir, "whisper-args.txt");
+  const fakeFfmpeg = path.join(tempDir, "fake-ffmpeg");
+  const fakeWhisper = path.join(tempDir, "fake-whisper");
+  await fs.writeFile(fakeFfmpeg, [
+    "#!/bin/sh",
+    "for last do :; done",
+    `printf '%s\\n' \"$@\" > ${JSON.stringify(ffmpegArgsPath)}`,
+    "printf 'RIFF....WAVEfmt ' > \"$last\""
+  ].join("\n"), { mode: 0o755 });
+  await fs.writeFile(fakeWhisper, [
+    "#!/bin/sh",
+    `printf '%s\\n' \"$@\" > ${JSON.stringify(whisperArgsPath)}`,
+    "printf '[00:00.000 --> 00:01.000] browser voice\\n'"
+  ].join("\n"), { mode: 0o755 });
+  const server = createServer({
+    mcpServers: {},
+    voice: {
+      uploadMaxBytes: 1024,
+      ffmpegBin: fakeFfmpeg,
+      whisperBin: fakeWhisper,
+      whisperModel: "model.bin"
+    }
+  }, { logger: { event: () => {} } });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const { port } = server.address();
+  try {
+    const formData = new FormData();
+    formData.append("audio", new Blob([Buffer.from("webm audio")], { type: "audio/webm" }), "microphone.webm");
+    const rawResponse = await fetch(`http://127.0.0.1:${port}/voice/transcribe`, {
+      method: "POST",
+      body: formData
+    });
+    const response = { status: rawResponse.status, body: await rawResponse.json() };
+    assert.equal(response.status, 200);
+    assert.equal(response.body.text, "browser voice");
+    assert.equal(response.body.audio.filename, "microphone.wav");
+    assert.equal(response.body.audio.contentType, "audio/wav");
+    assert.equal(response.body.audio.source.filename, "microphone.webm");
+
+    const ffmpegArgs = await fs.readFile(ffmpegArgsPath, "utf8");
+    assert.match(ffmpegArgs, /microphone\.webm/);
+    assert.match(ffmpegArgs, /microphone\.wav/);
+    const whisperArgs = await fs.readFile(whisperArgsPath, "utf8");
+    assert.match(whisperArgs, /model\.bin/);
+    assert.match(whisperArgs, /microphone\.wav/);
+    assert.doesNotMatch(whisperArgs, /microphone\.webm/);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+    await fs.rm(tempDir, { recursive: true, force: true });
+  }
+});
+
 test("POST /voice/transcribe rejects malformed non-audio uploads actionably", async () => {
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "oba-voice-bad-test-"));
   const textPath = path.join(tempDir, "not-audio.txt");
