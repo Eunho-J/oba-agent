@@ -5,6 +5,17 @@ import path from "node:path";
 import test from "node:test";
 import { createServer } from "../src/index.js";
 
+function extractTaggedBlock(content, tag) {
+  const text = String(content || "");
+  const regex = new RegExp(`\\[${tag}\\]([\\s\\S]*?)\\[\\/${tag}\\]`, "u");
+  const match = text.match(regex);
+  return match?.[1]?.trim() || "";
+}
+
+function findFeatureCall(calls, feature) {
+  return calls.find((call) => call?.metadata?.feature === feature);
+}
+
 async function withServer(handler, deps = {}) {
   const providerCalls = [];
   const lmStudioCalls = [];
@@ -24,9 +35,21 @@ async function withServer(handler, deps = {}) {
     baseUrl: "http://127.0.0.1:1234/v1",
     async complete(request) {
       lmStudioCalls.push(request);
-      const mainAnswer = request.messages.at(-1).content;
+      const feature = request?.metadata?.feature;
+      if (feature === "exaone.input_translation") {
+        const rawUser = extractTaggedBlock(request.messages.at(-1).content, "user");
+        return {
+          id: "resp_exaone_input",
+          model: "exaone-4.0-1.2b",
+          choices: [{ message: { content: `[agent]${rawUser} (translated)[/agent]` } }]
+        };
+      }
+      if (feature !== "exaone.final_answer") {
+        throw new Error(`unexpected EXAONE feature: ${String(feature)}`);
+      }
+      const mainAnswer = extractTaggedBlock(request.messages.at(-1).content, "agent");
       return {
-        id: "resp_exaone",
+        id: "resp_exaone_final",
         model: "exaone-4.0-1.2b",
         choices: [{ message: { content: `exaone final: ${mainAnswer}` } }]
       };
@@ -84,6 +107,24 @@ function commonsFetchFixture() {
   });
 }
 
+function webSearchFetchFixture() {
+  return async (url) => {
+    assert.match(String(url), /duckduckgo\.com/);
+    return {
+      ok: true,
+      status: 200,
+      async text() {
+        return [
+          '<a class="result__a" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com%2Fopenai">OpenAI result</a>',
+          '<a class="result__snippet">OpenAI search summary.</a>',
+          '<a class="result__a" href="https://example.org/ai">AI result</a>',
+          '<div class="result__snippet">AI search summary.</div>'
+        ].join("\n");
+      }
+    };
+  };
+}
+
 function toolCall({ id = "call_1", name, args = {} }) {
   return {
     id,
@@ -119,19 +160,27 @@ test("POST /turn returns EXAONE final answer with main-agent metadata", async ()
     assert.equal(response.status, 200);
     assert.equal(response.body.ok, true);
     assert.match(response.body.answer, /^exaone final:/);
-    assert.match(response.body.answer, /메인 에이전트 결과: plain final/);
+    assert.match(response.body.answer, /plain final/);
     assert.equal(response.body.metadata.mainAgentAnswer, "plain final");
+    assert.equal(response.body.metadata.mainAgentInput, "hello (translated)");
+    assert.equal(response.body.metadata.originalUserMessage, "hello");
     assert.equal(response.body.metadata.finalAnswerProvider, "lmstudio-exaone");
     assert.equal(response.body.metadata.finalAnswerModel, "exaone-4.0-1.2b");
     assert.equal(response.body.metadata.finalAnswerMode, "exaone.final");
+    assert.equal(response.body.metadata.inputTranslationMode, "exaone.input_translation");
     assert.equal(response.body.surface, undefined);
     assert.equal(response.body.plan, undefined);
     assert.equal(response.body.result, undefined);
     assert.equal(providerCalls.length, 1);
-    assert.equal(lmStudioCalls.length, 1);
-    assert.equal(providerCalls[0].messages[1].content, "hello");
-    assert.match(lmStudioCalls[0].messages.at(-1).content, /사용자 요청: hello/);
-    assert.match(lmStudioCalls[0].messages.at(-1).content, /메인 에이전트 결과: plain final/);
+    assert.equal(lmStudioCalls.length, 2);
+    assert.equal(providerCalls[0].messages[1].content, "hello (translated)");
+    const inputTranslationCall = findFeatureCall(lmStudioCalls, "exaone.input_translation");
+    const finalAnswerCall = findFeatureCall(lmStudioCalls, "exaone.final_answer");
+    assert.ok(inputTranslationCall);
+    assert.ok(finalAnswerCall);
+    assert.match(inputTranslationCall.messages.at(-1).content, /\[user\]\s*hello\s*\[\/user\]/);
+    assert.match(finalAnswerCall.messages.at(-1).content, /\[user\]\s*hello\s*\[\/user\]/);
+    assert.match(finalAnswerCall.messages.at(-1).content, /\[agent\]\s*plain final\s*\[\/agent\]/);
   });
 });
 
@@ -239,7 +288,9 @@ test("POST /turn attaches ordered inline ggui surfaces returned by main-agent to
     assert.equal(response.body.metadata.debug.mainAgent.toolCalls[0].status, "success");
     assert.equal(response.body.metadata.debug.mainAgent.toolCalls[1].name, "ggui_render_surface");
     assert.equal(response.body.metadata.debug.mainAgent.toolCalls[1].status, "success");
-    assert.match(lmStudioCalls[0].messages.at(-1).content, /MAIN_SENTINEL/);
+    const finalAnswerCall = findFeatureCall(lmStudioCalls, "exaone.final_answer");
+    assert.ok(finalAnswerCall);
+    assert.match(finalAnswerCall.messages.at(-1).content, /MAIN_SENTINEL/);
     assert.equal(providerCalls.length, 3);
   } finally {
     await new Promise((resolve) => server.close(resolve));
@@ -251,6 +302,8 @@ test("POST /turn can attach ggui from non-search data sources", async () => {
   const lmStudioCalls = [];
   const workspaceRoot = process.cwd();
   const dataPath = path.join(workspaceRoot, "tmp", "ggui-non-search-data.json");
+  const userMessage = "로컬 파일을 읽어서 비교 표 UI로 붙여줘";
+  assert.doesNotMatch(userMessage, /ggui/i);
   await fs.mkdir(path.dirname(dataPath), { recursive: true });
   await fs.writeFile(dataPath, JSON.stringify({
     items: [
@@ -309,6 +362,14 @@ test("POST /turn can attach ggui from non-search data sources", async () => {
     baseUrl: "http://127.0.0.1:1234/v1",
     async complete(request) {
       lmStudioCalls.push(request);
+      if (request?.metadata?.feature === "exaone.input_translation") {
+        const rawUser = extractTaggedBlock(request.messages.at(-1).content, "user");
+        return {
+          id: "resp_exaone_non_search_input",
+          model: "exaone-4.0-1.2b",
+          choices: [{ message: { content: `[agent]${rawUser}[/agent]` } }]
+        };
+      }
       return {
         id: "resp_exaone_non_search",
         model: "exaone-4.0-1.2b",
@@ -325,10 +386,12 @@ test("POST /turn can attach ggui from non-search data sources", async () => {
   const { port } = server.address();
   try {
     const response = await postJson(`http://127.0.0.1:${port}`, "/turn", {
-      message: "로컬 파일을 읽어서 비교 표 UI로 붙여줘"
+      message: userMessage
     });
     assert.equal(response.status, 200);
     assert.equal(response.body.answer, "EXAONE final with parsed local table.");
+    assert.equal(response.body.metadata.originalUserMessage, userMessage);
+    assert.equal(response.body.metadata.mainAgentInput, userMessage);
     assert.equal(response.body.gguiAttachments.length, 1);
     assert.equal(response.body.surface.kind, "comparisonTable");
     assert.deepEqual(response.body.surface, response.body.gguiAttachments[0]);
@@ -337,10 +400,118 @@ test("POST /turn can attach ggui from non-search data sources", async () => {
     assert.equal(response.body.surface.items[0].name, "alpha");
     assert.equal(response.body.metadata.debug.mainAgent.toolCalls.map((call) => call.name).join(","), "read,ggui_render_surface");
     assert.equal(response.body.metadata.debug.mainAgent.toolCalls.some((call) => call.name === "search_images"), false);
-    assert.match(lmStudioCalls[0].messages.at(-1).content, /MAIN_SENTINEL/);
+    const finalAnswerCall = findFeatureCall(lmStudioCalls, "exaone.final_answer");
+    assert.ok(finalAnswerCall);
+    assert.match(finalAnswerCall.messages.at(-1).content, /MAIN_SENTINEL/);
   } finally {
     await new Promise((resolve) => server.close(resolve));
     await fs.rm(dataPath, { force: true });
+  }
+});
+
+test("POST /turn can organize web_search results with ggui without user naming ggui", async () => {
+  const providerCalls = [];
+  const lmStudioCalls = [];
+  const userMessage = "최신 AI 소식 몇 개 찾아서 보기 좋게 정리해줘";
+  assert.doesNotMatch(userMessage, /ggui/i);
+  const provider = {
+    name: "scripted",
+    async complete(request) {
+      providerCalls.push(request);
+      if (providerCalls.length === 1) {
+        return {
+          id: "resp_web_search",
+          choices: [{
+            message: {
+              tool_calls: [toolCall({
+                id: "call_web_search",
+                name: "web_search",
+                args: {
+                  query: "latest AI news",
+                  limit: 2
+                }
+              })]
+            }
+          }]
+        };
+      }
+      if (providerCalls.length === 2) {
+        return {
+          id: "resp_web_surface",
+          choices: [{
+            message: {
+              tool_calls: [toolCall({
+                id: "call_web_surface",
+                name: "ggui_render_surface",
+                args: {
+                  type: "comparison.table",
+                  payload: {
+                    title: "Latest AI links",
+                    columns: [
+                      { key: "title", label: "Title" },
+                      { key: "source", label: "Source" }
+                    ],
+                    items: [
+                      { title: "OpenAI result", source: "https://example.com/openai" },
+                      { title: "AI result", source: "https://example.org/ai" }
+                    ]
+                  }
+                }
+              })]
+            }
+          }]
+        };
+      }
+      return {
+        id: "resp_web_final",
+        choices: [{ message: { content: "MAIN_SENTINEL: web results organized." } }]
+      };
+    }
+  };
+  const lmStudioClient = {
+    name: "lmstudio-exaone",
+    model: "exaone-4.0-1.2b",
+    baseUrl: "http://127.0.0.1:1234/v1",
+    async complete(request) {
+      lmStudioCalls.push(request);
+      if (request?.metadata?.feature === "exaone.input_translation") {
+        return {
+          id: "resp_exaone_web_input",
+          model: "exaone-4.0-1.2b",
+          choices: [{ message: { content: `[agent]${extractTaggedBlock(request.messages.at(-1).content, "user")}[/agent]` } }]
+        };
+      }
+      return {
+        id: "resp_exaone_web_final",
+        model: "exaone-4.0-1.2b",
+        choices: [{ message: { content: "EXAONE final with web table." } }]
+      };
+    }
+  };
+  const server = createServer({ mcpServers: {} }, {
+    provider,
+    lmStudioClient,
+    logger: { event: () => {} },
+    fetch: webSearchFetchFixture()
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const { port } = server.address();
+  try {
+    const response = await postJson(`http://127.0.0.1:${port}`, "/turn", { message: userMessage });
+    assert.equal(response.status, 200);
+    assert.equal(response.body.answer, "EXAONE final with web table.");
+    assert.equal(response.body.metadata.originalUserMessage, userMessage);
+    assert.equal(response.body.metadata.debug.mainAgent.toolCalls.map((call) => call.name).join(","), "web_search,ggui_render_surface");
+    assert.equal(response.body.metadata.debug.mainAgent.toolCalls[0].result.result.results.length, 2);
+    assert.equal(response.body.gguiAttachments.length, 1);
+    assert.equal(response.body.surface.kind, "comparisonTable");
+    assert.equal(response.body.surface.items[0].title, "OpenAI result");
+    assert.equal(response.body.surface.items[1].source, "https://example.org/ai");
+    const finalAnswerCall = findFeatureCall(lmStudioCalls, "exaone.final_answer");
+    assert.ok(finalAnswerCall);
+    assert.match(finalAnswerCall.messages.at(-1).content, /MAIN_SENTINEL/);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
   }
 });
 
@@ -435,6 +606,13 @@ test("POST /turn debug metadata includes main-agent + EXAONE IO for successful r
     baseUrl: "http://127.0.0.1:1234/v1",
     async complete(request) {
       lmStudioCalls.push(request);
+      if (request?.metadata?.feature === "exaone.input_translation") {
+        return {
+          id: "resp_exaone_input_debug",
+          model: "exaone-4.0-1.2b",
+          choices: [{ message: { content: "[agent]read file now[/agent]" } }]
+        };
+      }
       return {
         id: "resp_exaone_debug",
         model: "exaone-4.0-1.2b",
@@ -465,10 +643,11 @@ test("POST /turn debug metadata includes main-agent + EXAONE IO for successful r
     assert.equal(debug.mainAgent.toolCalls[0].result.ok, true);
     assert.equal(debug.mainAgent.toolCalls[0].result.result.path, "tmp/e2e-readable-note.txt");
     assert.equal(typeof debug.mainAgent.providerCalls[0].request.messages[0].content, "string");
-    assert.match(debug.exaone.input.messages.at(-1).content, /MAIN_SENTINEL/);
-    assert.equal(debug.exaone.output, "EXAONE polished final response.");
-    assert.equal(debug.exaone.model, "exaone-4.0-1.2b");
-    assert.equal(lmStudioCalls.length, 1);
+    assert.match(debug.exaoneFinal.input.messages.at(-1).content, /MAIN_SENTINEL/);
+    assert.equal(debug.exaoneFinal.output, "EXAONE polished final response.");
+    assert.equal(debug.exaoneFinal.model, "exaone-4.0-1.2b");
+    assert.match(debug.inputTranslation.rawOutput, /\[agent\]read file now\[\/agent\]/);
+    assert.equal(lmStudioCalls.length, 2);
     assert.equal(providerCalls.length, 2);
   } finally {
     await new Promise((resolve) => server.close(resolve));
@@ -646,8 +825,10 @@ test("POST /agent/turn delegates to the same engine handler", async () => {
     assert.equal(response.status, 200);
     assert.equal(response.body.ok, true);
     assert.match(response.body.answer, /^exaone final:/);
-    assert.equal(providerCalls[0].messages[1].content, "hello alias");
-    assert.match(lmStudioCalls[0].messages.at(-1).content, /메인 에이전트 결과: plain final/);
+    assert.equal(providerCalls[0].messages[1].content, "hello alias (translated)");
+    const finalAnswerCall = findFeatureCall(lmStudioCalls, "exaone.final_answer");
+    assert.ok(finalAnswerCall);
+    assert.match(finalAnswerCall.messages.at(-1).content, /\[agent\]\s*plain final\s*\[\/agent\]/);
   });
 });
 

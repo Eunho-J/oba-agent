@@ -131,7 +131,7 @@ test("agent loop executes a tool, appends tool result, then returns final conten
   assert.equal(result.metadata.promptVersion, OBA_PROMPT_VERSION);
   assert.equal(result.metadata.toolSchemaVersion, OBA_TOOL_SCHEMA_VERSION);
   assert.equal(providerCalls.length, 2);
-  assert.equal(providerCalls[0].tools.length, 6);
+  assert.equal(providerCalls[0].tools.length, 7);
   assert.equal(providerCalls[1].messages.at(-1).role, "tool");
   assert.ok(logs.some((entry) => entry.name === "tool.call.success"));
   assert.ok(logs.some((entry) => entry.name === "final.claim_check"));
@@ -319,4 +319,19 @@ test("claim check downgrades completion claims without tool evidence", async () 
   });
   assert.equal(result.metadata.claimCheck.passed, false);
   assert.match(result.answer, /확인할 수 있는 도구 실행 기록/);
+});
+
+test("claim check does not downgrade capability explanations without tool evidence", async () => {
+  const provider = scriptedProvider([response({
+    content: "파일 확인은 가능합니다. read 도구를 사용해서 작업공간 안의 UTF-8 텍스트 파일을 읽을 수 있습니다."
+  })]);
+  const result = await runAgentTurn({
+    message: "파일확인은?",
+    provider,
+    logger: { event: () => {} }
+  });
+
+  assert.equal(result.metadata.claimCheck.passed, true);
+  assert.equal(result.metadata.claimCheck.downgraded, false);
+  assert.match(result.answer, /파일 확인은 가능합니다/);
 });

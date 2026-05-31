@@ -5,7 +5,9 @@ import { createOpenAICompatibleProvider, deriveHealthUrl } from "./engine/provid
 import { createFileConversationMemoryStore } from "./engine/memory-store.js";
 import {
   buildFinalAnswerMessages,
+  buildInputTranslationMessages,
   createLmStudioProfileProvider,
+  extractAgentTaggedContent,
   runProfiledAgentTurn
 } from "./engine/profiled-agent.js";
 import { createStreamableHttpMcpAdapter } from "./mcp/adapter.js";
@@ -322,10 +324,43 @@ async function runMainToExaoneTurn({
     fetchImpl,
     logger
   });
+  const inputTranslationMessages = buildInputTranslationMessages({
+    userMessage: body.message
+  });
+  const inputTranslationProvider = createLmStudioProfileProvider(lmStudioClient, {
+    feature: "exaone.input_translation"
+  });
+  let inputTranslationResult;
+  try {
+    inputTranslationResult = await runProfiledAgentTurn({
+      profileId: "exaone-agent",
+      profiles: appConfig.agentProfiles,
+      message: inputTranslationMessages.at(-1).content,
+      initialMessages: inputTranslationMessages,
+      conversationId: "",
+      metadata: body.metadata || {},
+      provider: inputTranslationProvider,
+      registry,
+      memoryStore: null,
+      contextOptions: appConfig.context,
+      turnTimeoutMs: appConfig.context?.turnTimeoutMs,
+      logger,
+      maxProviderCalls: 1,
+      maxToolCalls: 0
+    });
+  } catch (error) {
+    if (error.code === "PROVIDER_REQUEST_FAILED" && error.cause) {
+      throw toLlmRequestError(error.cause);
+    }
+    throw error;
+  }
+  const mainAgentInput = extractAgentTaggedContent(inputTranslationResult.answer, body.message);
+  const inputTranslationFallback = mainAgentInput === body.message
+    && inputTranslationResult.answer.trim() !== body.message.trim();
   const mainResult = await runProfiledAgentTurn({
     profileId: "main-agent",
     profiles: appConfig.agentProfiles,
-    message: body.message,
+    message: mainAgentInput,
     conversationId: body.conversationId || "",
     metadata: body.metadata || {},
     overrideToolMode: body.toolMode,
@@ -340,7 +375,9 @@ async function runMainToExaoneTurn({
     userMessage: body.message,
     mainAgentAnswer: mainResult.answer
   });
-  const exaoneProvider = createLmStudioProfileProvider(lmStudioClient);
+  const exaoneProvider = createLmStudioProfileProvider(lmStudioClient, {
+    feature: "exaone.final_answer"
+  });
   let exaoneResult;
   try {
     exaoneResult = await runProfiledAgentTurn({
@@ -348,11 +385,11 @@ async function runMainToExaoneTurn({
       profiles: appConfig.agentProfiles,
       message: finalAnswerMessages.at(-1).content,
       initialMessages: finalAnswerMessages,
-      conversationId: body.conversationId ? `${body.conversationId}:exaone` : "",
+      conversationId: "",
       metadata: body.metadata || {},
       provider: exaoneProvider,
       registry,
-      memoryStore,
+      memoryStore: null,
       contextOptions: appConfig.context,
       turnTimeoutMs: appConfig.context?.turnTimeoutMs,
       logger,
@@ -369,6 +406,7 @@ async function runMainToExaoneTurn({
     turnId: mainResult.turnId,
     traceId: mainResult.traceId,
     message: body.message,
+    mainAgentInput,
     mainAgentAnswer: mainResult.answer,
     exaoneAnswer: exaoneResult.answer
   }, { logger }));
@@ -381,6 +419,14 @@ async function runMainToExaoneTurn({
     surface: inlineSurface,
     metadata: {
       ...(mainResult.metadata || {}),
+      originalUserMessage: body.message,
+      mainAgentInput,
+      inputTranslationProvider: lmStudioClient.name || "lmstudio-exaone",
+      inputTranslationModel: lmStudioClient.model,
+      inputTranslationBaseUrl: lmStudioClient.baseUrl,
+      inputTranslationMode: "exaone.input_translation",
+      inputTranslationAnswer: inputTranslationResult.answer,
+      inputTranslationFallback,
       mainAgentAnswer: mainResult.answer,
       finalAnswerProvider: lmStudioClient.name || "lmstudio-exaone",
       finalAnswerModel: lmStudioClient.model,
@@ -401,7 +447,31 @@ async function runMainToExaoneTurn({
         mainAgent: {
           ...(mainResult?.metadata?.debug?.mainAgent || {}),
           output: mainResult.answer,
-          profile: mainResult.metadata?.profile
+          profile: mainResult.metadata?.profile,
+          originalUserMessage: body.message,
+          input: mainAgentInput
+        },
+        inputTranslation: {
+          ...(inputTranslationResult?.metadata?.debug?.mainAgent || {}),
+          profile: inputTranslationResult.metadata?.profile,
+          output: mainAgentInput,
+          rawOutput: inputTranslationResult.answer,
+          fallbackToOriginal: inputTranslationFallback,
+          model: lmStudioClient.model
+        },
+        exaoneInput: {
+          ...(inputTranslationResult?.metadata?.debug?.mainAgent || {}),
+          profile: inputTranslationResult.metadata?.profile,
+          output: mainAgentInput,
+          rawOutput: inputTranslationResult.answer,
+          fallbackToOriginal: inputTranslationFallback,
+          model: lmStudioClient.model
+        },
+        exaoneFinal: {
+          ...(exaoneResult?.metadata?.debug?.mainAgent || {}),
+          profile: exaoneResult.metadata?.profile,
+          output: exaoneResult.answer,
+          model: lmStudioClient.model
         },
         exaone: {
           ...(exaoneResult?.metadata?.debug?.mainAgent || {}),
@@ -411,6 +481,9 @@ async function runMainToExaoneTurn({
         },
         profiledEngine: {
           main: mainResult.metadata?.debug?.profiledEngine,
+          inputTranslation: inputTranslationResult.metadata?.debug?.profiledEngine,
+          exaoneInput: inputTranslationResult.metadata?.debug?.profiledEngine,
+          exaoneFinal: exaoneResult.metadata?.debug?.profiledEngine,
           exaone: exaoneResult.metadata?.debug?.profiledEngine
         }
       }

@@ -39,6 +39,21 @@ function commonsFetchFixture() {
   });
 }
 
+function duckDuckGoHtmlFixture() {
+  return async () => ({
+    ok: true,
+    status: 200,
+    async text() {
+      return [
+        '<a class="result__a" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com%2Falpha">Alpha &amp; Result</a>',
+        '<a class="result__snippet">First external result.</a>',
+        '<a class="result__a" href="https://example.org/beta">Beta Result</a>',
+        '<div class="result__snippet">Second external result.</div>'
+      ].join("\n");
+    }
+  });
+}
+
 test("default registry exposes built-in file, shell, and ggui tools", async () => {
   const { registry } = await fixture();
   assert.deepEqual(registry.list().map((tool) => tool.name), [
@@ -46,6 +61,7 @@ test("default registry exposes built-in file, shell, and ggui tools", async () =
     "write",
     "edit",
     "bash",
+    "web_search",
     "search_images",
     "ggui_render_surface"
   ]);
@@ -54,6 +70,7 @@ test("default registry exposes built-in file, shell, and ggui tools", async () =
     "write",
     "edit",
     "bash",
+    "web_search",
     "search_images",
     "ggui_render_surface"
   ]);
@@ -216,6 +233,27 @@ test("search_images returns structured external image data", async () => {
   assert.equal(result.query, "restaurant food interior");
   assert.equal(result.images[0].caption, "Restaurant interior");
   assert.equal(result.images[0].source, "https://commons.wikimedia.org/wiki/File:Restaurant.jpg");
+});
+
+test("web_search returns structured live web result links", async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "oba-web-search-tool-"));
+  const registry = createDefaultToolRegistry({
+    workspace: createWorkspace({ root }),
+    fetchImpl: duckDuckGoHtmlFixture()
+  });
+
+  const result = await registry.execute("web_search", {
+    query: "OpenAI latest news",
+    limit: 2
+  });
+
+  assert.equal(result.source, "duckduckgo-html");
+  assert.equal(result.query, "OpenAI latest news");
+  assert.equal(result.results.length, 2);
+  assert.equal(result.results[0].title, "Alpha & Result");
+  assert.equal(result.results[0].url, "https://example.com/alpha");
+  assert.equal(result.results[0].snippet, "First external result.");
+  assert.equal(result.results[1].url, "https://example.org/beta");
 });
 
 test("ggui_render_surface returns a renderer-neutral surface from prepared data", async () => {

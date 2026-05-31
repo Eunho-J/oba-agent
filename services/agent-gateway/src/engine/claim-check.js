@@ -1,17 +1,17 @@
 const COMPLETION_CLAIMS = [
-  /read/i,
-  /wrote/i,
-  /written/i,
-  /edited/i,
-  /ran/i,
-  /executed/i,
-  /completed/i,
+  /\b(i'?ve|i have|we'?ve|we have)\s+(read|written|edited|run|executed|completed)\b/i,
+  /\b(wrote|written|edited|ran|executed|completed)\b/i,
   /읽었/,
+  /확인했/,
   /썼/,
-  /작성/,
-  /수정/,
-  /실행/,
-  /완료/
+  /작성했/,
+  /수정했/,
+  /실행했/,
+  /완료했/,
+  /처리했/,
+  /끝냈/,
+  /저장했/,
+  /생성했/
 ];
 
 export function checkFinalClaims(answer, toolEvents) {

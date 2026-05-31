@@ -15,6 +15,7 @@ export function createBuiltInTools({ workspace = createWorkspace(), fetchImpl = 
     createWriteTool(workspace),
     createEditTool(workspace),
     createBashTool(workspace),
+    createWebSearchTool(fetchImpl),
     createSearchImagesTool(fetchImpl),
     createGguiRenderSurfaceTool()
   ];
@@ -165,6 +166,53 @@ function createSearchImagesTool(fetchImpl) {
   });
 }
 
+function createWebSearchTool(fetchImpl) {
+  return baseTool({
+    name: "web_search",
+    description: [
+      "Search the live web for current or external information and return structured result links.",
+      "Use this before ggui_render_surface when web findings should be organized as an inline UI."
+    ].join(" "),
+    risk: "read-only",
+    parameters: objectSchema({
+      query: { type: "string", description: "Web search query." },
+      limit: { type: "integer", description: "Maximum number of results, 1-10. Defaults to 5." }
+    }, ["query"]),
+    async execute(args = {}) {
+      const query = requiredString(args.query, "query");
+      const limit = clampLimit(args.limit, 5, 10);
+      const url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+      let response;
+      try {
+        response = await fetchImpl(url, {
+          headers: {
+            "User-Agent": "oba-agent-web-search/1.0"
+          }
+        });
+      } catch (cause) {
+        throw new ToolExecutionError("web search request failed", {
+          code: "WEB_SEARCH_REQUEST_FAILED",
+          cause
+        });
+      }
+      if (!response?.ok) {
+        throw new ToolExecutionError("web search request returned an error", {
+          code: "WEB_SEARCH_FAILED",
+          details: { status: response?.status }
+        });
+      }
+      const html = typeof response.text === "function"
+        ? await response.text()
+        : JSON.stringify(await response.json?.() || {});
+      return {
+        source: "duckduckgo-html",
+        query,
+        results: parseDuckDuckGoHtml(html).slice(0, limit)
+      };
+    }
+  });
+}
+
 function createGguiRenderSurfaceTool() {
   return baseTool({
     name: "ggui_render_surface",
@@ -189,6 +237,47 @@ function createGguiRenderSurfaceTool() {
       };
     }
   });
+}
+
+function parseDuckDuckGoHtml(html) {
+  const results = [];
+  const anchorPattern = /<a[^>]*class="[^"]*result__a[^"]*"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/giu;
+  const anchors = [...html.matchAll(anchorPattern)];
+  for (let index = 0; index < anchors.length; index += 1) {
+    const match = anchors[index];
+    const nextIndex = anchors[index + 1]?.index ?? html.length;
+    const block = html.slice((match.index || 0) + match[0].length, nextIndex);
+    const snippetMatch = block.match(/<(?:a|div)[^>]*class="[^"]*result__snippet[^"]*"[^>]*>([\s\S]*?)<\/(?:a|div)>/iu);
+    const url = normalizeSearchUrl(decodeHtml(match[1] || ""));
+    const title = cleanHtml(match[2] || "");
+    const snippet = cleanHtml(snippetMatch?.[1] || "");
+    if (url && title) results.push({ title, url, snippet });
+  }
+  return results;
+}
+
+function normalizeSearchUrl(rawUrl) {
+  if (!rawUrl) return "";
+  try {
+    const parsed = new URL(rawUrl, "https://duckduckgo.com");
+    const redirected = parsed.searchParams.get("uddg");
+    return redirected ? decodeURIComponent(redirected) : parsed.href;
+  } catch {
+    return rawUrl;
+  }
+}
+
+function cleanHtml(value) {
+  return decodeHtml(String(value).replace(/<[^>]*>/gu, " ").replace(/\s+/gu, " ").trim());
+}
+
+function decodeHtml(value) {
+  return String(value)
+    .replace(/&amp;/gu, "&")
+    .replace(/&quot;/gu, "\"")
+    .replace(/&#39;/gu, "'")
+    .replace(/&lt;/gu, "<")
+    .replace(/&gt;/gu, ">");
 }
 
 function objectSchema(properties, required) {
@@ -234,6 +323,18 @@ function clampTimeout(value) {
     });
   }
   return Math.min(timeout, 120_000);
+}
+
+function clampLimit(value, defaultValue, maxValue) {
+  if (value === undefined) return defaultValue;
+  const limit = Number(value);
+  if (!Number.isFinite(limit) || limit <= 0) {
+    throw new ToolExecutionError("limit must be a positive number", {
+      code: "TOOL_ARGUMENT_INVALID",
+      details: { argument: "limit" }
+    });
+  }
+  return Math.min(Math.floor(limit), maxValue);
 }
 
 function shellPath() {

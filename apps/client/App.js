@@ -418,24 +418,30 @@ function DebugPanel({ message }) {
   const metadata = message?.metadata || {};
   const debug = metadata?.debug || {};
   const mainAgent = debug?.mainAgent || {};
-  const exaone = debug?.exaone || {};
+  const inputTranslation = debug?.inputTranslation || debug?.exaoneInput || {};
+  const exaoneFinal = debug?.exaoneFinal || debug?.exaone || {};
 
   const mainInput = mainAgent?.input?.messages || mainAgent?.messages || [];
   const mainOutput = mainAgent?.output || metadata?.mainAgentAnswer || "";
   const mainToolCalls = mainAgent?.toolCalls || message?.toolCalls || [];
-  const exaoneInput = exaone?.input?.messages || [];
-  const exaoneOutput = exaone?.output || message?.text || "";
+  const exaoneUserInput = inputTranslation?.input?.messages || [];
+  const exaoneUserOutput = inputTranslation?.rawOutput || inputTranslation?.output || metadata?.inputTranslationAnswer || "";
+  const exaoneFinalInput = exaoneFinal?.input?.messages || [];
+  const exaoneFinalOutput = exaoneFinal?.output || message?.text || "";
 
   return (
     <View style={styles.debugPanel}>
       <Text style={styles.debugTitle}>Debug</Text>
       <Text style={styles.debugLine}>Main Provider: {mainAgent?.provider || "n/a"}</Text>
       <Text style={styles.debugLine}>Final Provider: {metadata?.finalAnswerProvider || "n/a"}</Text>
+      <Text style={styles.debugLine}>Main Agent Input: {metadata?.mainAgentInput || "n/a"}</Text>
+      <DebugBlock label="EXAONE User Input" value={compactJson(exaoneUserInput)} />
+      <DebugBlock label="EXAONE User Output" value={stringifyValue(exaoneUserOutput)} />
       <DebugBlock label="Main Input" value={compactJson(mainInput)} />
       <DebugBlock label="Main Output" value={stringifyValue(mainOutput)} />
       <DebugBlock label="Tool Calls" value={compactJson(mainToolCalls)} />
-      <DebugBlock label="EXAONE Input" value={compactJson(exaoneInput)} />
-      <DebugBlock label="EXAONE Output" value={stringifyValue(exaoneOutput)} />
+      <DebugBlock label="EXAONE Final Input" value={compactJson(exaoneFinalInput)} />
+      <DebugBlock label="EXAONE Final Output" value={stringifyValue(exaoneFinalOutput)} />
     </View>
   );
 }
